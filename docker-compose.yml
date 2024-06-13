@@ -3,8 +3,11 @@ version: '3.8'
 services:
   web:
     build: .
-    command: sh -c "npm run start:debug"
+    command: sh -c "npm run start:dev"
     ports:
       - "8080:8080"
     volumes:
-      - .:/app
+      - ./src:/app/src
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development

@@ -13,5 +13,11 @@ RUN npm install
 # Copy the src directory contents into the container at /app
 COPY src/ ./src
 
+# Install nodemon globally
+RUN npm install -g nodemon
+
 # Expose the port the app runs on
 EXPOSE 8080
+
+# Run the app with nodemon when the container launches
+# CMD ["npm", "run", "start:dev"]
