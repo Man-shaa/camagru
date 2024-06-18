@@ -9,7 +9,11 @@ const app = express();
 const port = 3000;
 const path = require('path');
 
-app.use(express.static(path.join(__dirname, 'public')));
+// require('dotenv').config();
+// const fs = require('fs');
+// JSON.parse(fs.readFileSync('config/firebase_credentials.json', 'utf8'));
+
+app.use(express.static(path.join(__dirname, '../public')));
 app.use('/src', express.static(path.join(__dirname, 'src')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -18,17 +22,18 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Configuration Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyDR7qOz9llvvh6ui1f8f7RC-e8M64zB9gE",
-    authDomain: "camagru-f29e5.firebaseapp.com",
-    databaseURL: "https://camagru-f29e5-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "camagru-f29e5",
-    storageBucket: "camagru-f29e5.appspot.com",
-    messagingSenderId: "65788784839",
-    appId: "1:65788784839:web:d15b5a7e73048b31894ee2"
-  };
+const appSettings = {
+  apiKey: "AIzaSyCA7KM7VizUr6bMQqTK7sVeJ-6vA6RjUrk",
+  authDomain: "camagru-d216b.firebaseapp.com",
+  databaseURL: "https://camagru-d216b-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "camagru-d216b",
+  storageBucket: "camagru-d216b.appspot.com",
+  messagingSenderId: "351309562875",
+  appId: "1:351309562875:web:d1d5c58f5fb22b48d8015e",
+  measurementId: "G-2SXPRWGJ87"
+}
 
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(appSettings);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);

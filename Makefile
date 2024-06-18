@@ -2,6 +2,10 @@ all: run
 
 re: clean run
 
+setup:
+	@echo "setup config files"
+	cd config && npm install
+
 run : down
 	@echo "Building and running the app"
 	docker-compose up --build
