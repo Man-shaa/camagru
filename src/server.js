@@ -9,10 +9,6 @@ const app = express();
 const port = 3000;
 const path = require('path');
 
-// require('dotenv').config();
-// const fs = require('fs');
-// JSON.parse(fs.readFileSync('config/firebase_credentials.json', 'utf8'));
-
 app.use(express.static(path.join(__dirname, '../public')));
 app.use('/src', express.static(path.join(__dirname, 'src')));
 app.get('/', (req, res) => {
