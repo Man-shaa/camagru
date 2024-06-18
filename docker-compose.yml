@@ -1,13 +1,12 @@
-version: '3.8'
-
 services:
   web:
     build: .
-    command: sh -c "npm run start:dev"
     ports:
-      - "8080:8080"
+      - "3000:3000"
+      - "3001:3001"
     volumes:
-      - ./src:/app/src
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
+      - ./public:/usr/src/app/public
+      - ./src:/usr/src/app/src
+    env_file:
+      - .env
+    command: npm run start:dev

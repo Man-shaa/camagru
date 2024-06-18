@@ -1,23 +1,17 @@
-# Use an official Node.js runtime as a parent image
-FROM node:18-alpine
+FROM node:18
 
-# Set the working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json first to leverage Docker cache
-COPY package*.json ./
+VOLUME /usr/src
 
-# Install any needed packages
+# Copy package files first to leverage Docker cache
+COPY config/package.json config/package-lock.json ./
+
+# Install dependencies
 RUN npm install
 
-# Copy the src directory contents into the container at /app
-COPY src/ ./src
+COPY . .
 
-# Install nodemon globally
-RUN npm install -g nodemon
+EXPOSE 3000
 
-# Expose the port the app runs on
-EXPOSE 8080
-
-# Run the app with nodemon when the container launches
-# CMD ["npm", "run", "start:dev"]
+EXPOSE 3001
