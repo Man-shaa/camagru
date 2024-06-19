@@ -23,8 +23,8 @@ Conception des interfaces utilisateur pour les différentes pages (inscription, 
 Choix de la stack technologique :
 
 Frontend : HTML, CSS, JavaScript.
-Backend : PHP ou Node.js.
-Base de données : MySQL ou SQLite.
+Backend : Node.js.
+Base de données : Firebase
 Configuration de l'environnement de développement :
 
 Serveur local (XAMPP, WAMP pour PHP, ou Node.js pour JavaScript).
