@@ -1,15 +1,16 @@
 all: run
 
+re-dev: clean run-dev
+
 re: clean run
 
-setup:
-	@echo "setup config files"
-	cd config && npm install
-
-run : down
+run: down
 	@echo "Building and running the app"
-	docker-compose up --build
+	COMMAND="npm run start" docker-compose up --build
 
+run-dev: down
+	@echo "Building and running the app in development mode"
+	COMMAND="npm run start:dev" docker-compose up --build
 down :
 	@echo "Stopping the app"
 	docker compose down --rmi all --volumes

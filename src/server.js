@@ -1,21 +1,6 @@
-const express = require('express');
 const firebase = require('firebase/app');
 require('firebase/database');
 require('firebase/auth');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-
-const app = express();
-const port = 3000;
-const path = require('path');
-
-app.use(express.static(path.join(__dirname, '../public')));
-app.use('/src', express.static(path.join(__dirname, 'src')));
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  });
-app.use(cors());
-app.use(bodyParser.json());
 
 // Configuration Firebase
 const appSettings = {
@@ -31,6 +16,45 @@ const appSettings = {
 
 firebase.initializeApp(appSettings);
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}/`);
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+// Fonction pour gérer les requêtes
+const requestHandler = (req, res) => {
+  const url = req.url;
+
+  if (url === '/') {
+    // Serve index.html
+    fs.readFile(path.join(__dirname, '../public/index.html'), (err, data) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        res.end('Internal Server Error');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      res.end(data);
+    });
+  } else if (url.match(/\.css$/)) {
+    // Serve CSS files
+    fs.readFile(path.join(__dirname, '../public', url), (err, data) => {
+      if (err) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Not Found');
+        return;
+      }
+      res.writeHead(200, { 'Content-Type': 'text/css' });
+      res.end(data);
+    });
+  } else {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not Found');
+  }
+};
+
+const server = http.createServer(requestHandler);
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
