@@ -1,39 +1,35 @@
-import { showAlert, fetchData } from './common.js';
-
 document.addEventListener('DOMContentLoaded', () => {
-  console.log("register.js loaded")
+  console.log('Register page loaded')
   const registerForm = document.getElementById('register-form');
 
   registerForm.addEventListener('submit', async (event) => {
+    console.log('Form submitted');
     event.preventDefault(); // Prevent the form from submitting the default way
 
-    console.log('Form submitted!'); // Check if form submission is intercepted
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-    const formData = new FormData(registerForm);
-    const data = {
-      email: formData.get('email'),
-      password: formData.get('password')
-    };
+    const requestBody = { email, password };
+    console.log('Request body:', requestBody);
 
-    console.log('Form data:', data); // Check if form data is correctly extracted
-
-    try
-    {
-      const result = await fetchData('/register', {
+    try {
+      const response = await fetch('/register', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(requestBody),
       });
 
-      if (result)
-        showAlert(result.message, 'success');
-    }
-    catch (error)
-    {
-      console.error('Error:', error); // Log any errors that occur
-      showAlert('An error occurred. Please try again.', 'error');
+      if (response.ok) {
+        const result = await response.json();
+        console.log('User created:', result);
+      } else {
+        const error = await response.json();
+        console.error('Failed to create user:', error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
     }
   });
 });
