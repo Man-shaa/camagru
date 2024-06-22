@@ -20,7 +20,7 @@ const router = async (req, res) => {
   else if (pathname === '/signin' && method === 'POST')
   {
     console.log('handling sign in');
-    handleSignIn(req, res);
+    await handleSignIn(req, res);
   }
   else if (pathname === '/users' && method === 'GET')
     await userController.getUsers();
@@ -61,8 +61,8 @@ const handleSignIn = async (req, res) => {
   req.on("end", async () => {
     req.body = parseFormData(body);
     console.log("req.body", req.body);
+    await userController.signin(req.body, res);
   });
-  await userController.signin(body, res);
 }
 
 const serveStaticFile = (filePath, contentType, res) => {

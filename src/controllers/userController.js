@@ -1,6 +1,6 @@
-const firebase = require('../firebase');
-const admin = require("firebase-admin");
-
+const firebase = require('../firebase/firebase');
+const admin = require("../firebase/firebaseAdmin");
+const { getAuth, signInWithEmailAndPassword } = require("firebase/auth");
 /**
  * Return all users in the database
 */
@@ -85,35 +85,36 @@ const createUser = async (body, res) =>
  * @param {Object} body - {email, password}
 */
 const signin = async (body, res) => {
-  try {
+  try
+  {
     const {email, password} = body;
-    const auth = firebase.auth();
-    const userCredential = await auth.signInWithEmailAndPassword(email, password);
-    // const userCredential = auth.signInWithEmailAndPassword(email, password);
-    console.log('Successfully signed in user:', userCredential);
-    // .then((userCredential) => {
-    //   // Signed in 
-    //   const user = userCredential.user;
-    //   console.log('Successfully signed in user:', user);
-    //   // ...
-    // })
-    // .catch((error) => {
-    //   const errorCode = error.code;
-    //   const errorMessage = error.message;
-    // });
+    console.log("body:", body);
+    // admin.initializeApp();
+    const auth = getAuth();
+    let user = await signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in 
+        console.log('Successfully signed in user:', userCredential.user.uid
+        );
+        const user = userCredential.user;
+        return (user)
+        // ...
+      })
 
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error('Error signing in user:', error.message);
+      });
 
-  //   console.log('Signing in user...', email, password);
+    console.log('Successfully signed in user:', user.uid);
 
-  //   const userCredential = await admin.auth().signInWithEmailAndPassword(email, password);
-  //   const user = userCredential.user;
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ uid: user.uid, email: user.email }));
 
-  //   console.log('Successfully signed in user:', user.uid);
-
-  //   res.writeHead(200, { 'Content-Type': 'application/json' });
-  //   res.end(JSON.stringify({ uid: user.uid, email: user.email }));
-
-  } catch (error) {
+  }
+  catch (error)
+  {
     console.error('Error signing in user:', error.message);
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Failed to sign in user', details: error.message }));

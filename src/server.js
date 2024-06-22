@@ -1,15 +1,9 @@
 // Requirements
-const admin = require("firebase-admin");
-var serviceAccount = require("../config/camagru-private-key.json");
 const http = require('http');
 const routes = require('./routes');
 const fs = require('fs');
 const path = require('path');
 
-admin.initializeApp({
-	credential: admin.credential.cert(serviceAccount),
-	databaseURL: "https://camagru-d216b-default-rtdb.europe-west1.firebasedatabase.app"
-});
 
 
 const requestHandler = (req, res) => {
