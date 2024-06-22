@@ -1,6 +1,7 @@
-const firebase = require('../firebase/firebase');
+require('../firebase/firebase');
 const admin = require("../firebase/firebaseAdmin");
 const { getAuth, signInWithEmailAndPassword } = require("firebase/auth");
+
 /**
  * Return all users in the database
 */
@@ -51,11 +52,12 @@ const getUserByUID = async (uid) =>
 */ 
 const createUser = async (body, res) =>
 {
-	console.log('Creating user...', body);
-  try {
+  try
+  {
+    const {email, password} = body;
     const userRecord = await admin.auth().createUser({
-      email: body.email,
-      password: body.password,
+      email: email,
+      password: password,
       // Add any other user properties you want to set
     });
 
@@ -74,7 +76,6 @@ const createUser = async (body, res) =>
   }
 	catch (error)
   {
-    // console.error('Error creating user:', error.message, error.stack);
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Failed to create user', details: error.message }));
   }
@@ -88,14 +89,11 @@ const signin = async (body, res) => {
   try
   {
     const {email, password} = body;
-    console.log("body:", body);
-    // admin.initializeApp();
     const auth = getAuth();
     let user = await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
-        console.log('Successfully signed in user:', userCredential.user.uid
-        );
+        console.log('Successfully signed in user:', userCredential.user.uid);
         const user = userCredential.user;
         return (user)
         // ...
@@ -106,8 +104,6 @@ const signin = async (body, res) => {
         const errorMessage = error.message;
         console.error('Error signing in user:', error.message);
       });
-
-    console.log('Successfully signed in user:', user.uid);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ uid: user.uid, email: user.email }));

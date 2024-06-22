@@ -16,10 +16,11 @@ const router = async (req, res) => {
     serveStaticFile(path.join(__dirname, '../public/pages/index.html'), 'text/html', res);
   }
   else if (pathname === '/signup' && method === 'POST')
+  {
 		await handleSignUp(req, res);
+  }
   else if (pathname === '/signin' && method === 'POST')
   {
-    console.log('handling sign in');
     await handleSignIn(req, res);
   }
   else if (pathname === '/users' && method === 'GET')
@@ -48,9 +49,8 @@ const handleSignUp = async (req, res) => {
   });
   req.on("end", async () => {
     req.body = parseFormData(body);
-    console.log("req.body", req.body);
+    await userController.createUser(req.body, res);
   });
-  await userController.createUser(body, res);
 };
 
 const handleSignIn = async (req, res) => {
@@ -60,7 +60,6 @@ const handleSignIn = async (req, res) => {
   });
   req.on("end", async () => {
     req.body = parseFormData(body);
-    console.log("req.body", req.body);
     await userController.signin(req.body, res);
   });
 }
