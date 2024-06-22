@@ -23,6 +23,10 @@ const router = async (req, res) => {
   {
     await handleSignIn(req, res);
   }
+  else if (pathname === '/homepage' && method === 'GET')
+  {
+    serveStaticFile(path.join(__dirname, '../public/pages/homepage.html'), 'text/html', res);
+  }
   else if (pathname === '/users' && method === 'GET')
     await userController.getUsers();
   else if (pathname.match(/\.css$/))

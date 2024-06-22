@@ -68,11 +68,8 @@ const createUser = async (body, res) =>
       // Add any other user properties you want to return
     };
     // redirect to /homepage
-    // res.writeHead(302, { 'Location': '/homepage' });
-    // res.end();
-
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(userData));
+    res.writeHead(302, { 'Location': '/homepage' });
+    res.end();
   }
 	catch (error)
   {
@@ -105,9 +102,9 @@ const signin = async (body, res) => {
         console.error('Error signing in user:', error.message);
       });
 
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ uid: user.uid, email: user.email }));
-
+    // redirect to /homepage
+    res.writeHead(302, { 'Location': '/homepage' });
+    res.end();
   }
   catch (error)
   {
