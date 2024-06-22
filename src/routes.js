@@ -16,16 +16,12 @@ const router = async (req, res) => {
     serveStaticFile(path.join(__dirname, '../public/pages/index.html'), 'text/html', res);
   }
   else if (pathname === '/signup' && method === 'POST')
-  {
-    // userController.createUser(req, res);
-    // serveStaticFile(path.join(__dirname, '../public/pages/index.html'), 'text/html', res);
 		await handleSignUp(req, res);
+  else if (pathname === '/signin' && method === 'POST')
+  {
+    console.log('handling sign in');
+    handleSignIn(req, res);
   }
-  // else if (path === '/signin' && method === 'POST')
-  // {
-    // serveStaticFile(path.join(__dirname, '../public/pages/signin.html'), 'text/html', res);
-  //   handleSignIn(req, res);
-  // }
   else if (pathname === '/users' && method === 'GET')
     await userController.getUsers();
   else if (pathname.match(/\.css$/))
@@ -54,7 +50,7 @@ const handleSignUp = async (req, res) => {
     req.body = parseFormData(body);
     console.log("req.body", req.body);
   });
-  await userController.createUser(req, res);
+  await userController.createUser(body, res);
 };
 
 const handleSignIn = async (req, res) => {
@@ -66,7 +62,7 @@ const handleSignIn = async (req, res) => {
     req.body = parseFormData(body);
     console.log("req.body", req.body);
   });
-  await userController.signin(req, res);
+  await userController.signin(body, res);
 }
 
 const serveStaticFile = (filePath, contentType, res) => {
