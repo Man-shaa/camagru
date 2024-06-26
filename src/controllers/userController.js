@@ -85,18 +85,16 @@ const createUser = async (body, res) =>
 const signin = async (body, res) => {
   try
   {
-    const {email, password} = body;
+    const email = body.email;
+    const password = body.password;
     const auth = getAuth();
     let user = signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
-        console.log('Successfully signed in user:', userCredential.user.uid);
 
-        // redirect to /homepage
-        res.writeHead(302, { 'Location': '/homepage' });
-        res.end();
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(user));
       })
-
       .catch((error) => {
         console.error('Error signing in user:', error.message);
 

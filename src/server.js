@@ -4,8 +4,6 @@ const routes = require('./routes');
 const fs = require('fs');
 const path = require('path');
 
-
-
 const requestHandler = (req, res) => {
 	const url = req.url;
 
