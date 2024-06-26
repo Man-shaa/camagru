@@ -23,7 +23,27 @@ const requestHandler = (req, res) => {
 	}
 	else if (url.match(/\.css$/))
 	{
-		openFile(url, res);
+		fs.readFile(path.join(__dirname, "../public/css", url), (err, data) => {
+      if (err) {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        res.end("Not Found");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/css" });
+      res.end(data);
+    });
+	}
+	else if (url.match(/\.js$/))
+	{
+		fs.readFile(path.join(__dirname, "../public/scripts", url), (err, data) => {
+			if (err) {
+				res.writeHead(404, { "Content-Type": "text/plain" });
+				res.end("Not Found");
+				return;
+			}
+			res.writeHead(200, { "Content-Type": "text/js" });
+			res.end(data);
+		});
 	}
 	else if (url === '/homepage' && req.method === 'GET')
 	{
@@ -35,7 +55,7 @@ const requestHandler = (req, res) => {
 	}
 };
 
-const openFile = (url, res) => {
+const openFile = (url, res, redir) => {
 	fs.readFile(path.join(__dirname, '../public/pages' + url + '.html'), (err, data) => {
 		if (err) {
 			res.writeHead(500, { 'Content-Type': 'text/plain' });

@@ -29,8 +29,6 @@ const router = async (req, res) => {
   }
   else if (pathname === '/users' && method === 'GET')
     await userController.getUsers();
-  else if (pathname.match(/\.css$/))
-    serveStaticFile(path.join(__dirname, '../public', pathname), 'text/css', res);
   else
   {
     res.writeHead(404, { 'Content-Type': 'text/plain' });

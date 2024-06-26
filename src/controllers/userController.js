@@ -87,24 +87,23 @@ const signin = async (body, res) => {
   {
     const {email, password} = body;
     const auth = getAuth();
-    let user = await signInWithEmailAndPassword(auth, email, password)
+    let user = signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in 
         console.log('Successfully signed in user:', userCredential.user.uid);
-        const user = userCredential.user;
-        return (user)
-        // ...
+
+        // redirect to /homepage
+        res.writeHead(302, { 'Location': '/homepage' });
+        res.end();
       })
 
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
         console.error('Error signing in user:', error.message);
+
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: error.message }));
       });
 
-    // redirect to /homepage
-    res.writeHead(302, { 'Location': '/homepage' });
-    res.end();
   }
   catch (error)
   {

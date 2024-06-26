@@ -4,24 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="sign.css">
+    <style>
+      .error { border: 1px solid red; }
+      .error-message { color: red; }
+    </style>
   </head>
   <body>
-    <header>
-      <h1>Sign In</h1>
-    </header>
+    <div class="container">
+      <h2>
+        <h1>Sign In</h1>
+      </h2>
 
-    <main>
-      <section id="signin-section">
-        <form id="signin-form" action="/signin" method="post">
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" required><br>
-          <label for="password">Password:</label>
-          <input type="password" id="password" name="password" required><br>
-          <button type="submit">Signin</button>
-        </form>
-      <p>Don't have an account yet? <a href="./signup">Sign Un</a></p>
-      </section>
-    </main>
+      <main>
+        <section id="signin-section">
+          <form id="signin-form" action="/signin" method="post">
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input type="email" id="email" name="email" required><br>
+              <div id="email-error" class="error-message" style="display: none;">Invalid email</div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input type="password" id="password" name="password" required><br>
+              <div id="password-error" class="error-message" style="display: none;">Invalid password</div>
+            </div>
+            <button type="submit">Signin</button>
+          </form>
+        <p>Don't have an account yet? <a href="./signup">Sign Up</a></p>
+        </section>
+      </main>
+    </div>
+    <script src="signin.js"></script>
   </body>
 </html>
