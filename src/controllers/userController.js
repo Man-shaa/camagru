@@ -1,6 +1,7 @@
 require('../firebase/firebase');
 const admin = require("../firebase/firebaseAdmin");
 const { getAuth, signInWithEmailAndPassword } = require("firebase/auth");
+const mailer = require('../mailer');
 
 /**
  * Return all users in the database
@@ -54,22 +55,45 @@ const createUser = async (body, res) =>
 {
   try
   {
-    const {email, password} = body;
+    const { email, password } = body;
     const userRecord = await admin.auth().createUser({
       email: email,
       password: password,
+      emailVerified: false
       // Add any other user properties you want to set
     });
-
-    const userData = {
-      uid: userRecord.uid,
-      email: userRecord.email,
-      displayName: userRecord.displayName,
-      // Add any other user properties you want to return
+    // Send verification email
+    const actionCodeSettings = {
+      url: 'http://localhost:3000', // URL to redirect to after verification
+      handleCodeInApp: true,
     };
-    // redirect to /homepage
-    res.writeHead(302, { 'Location': '/homepage' });
-    res.end();
+    
+    const user = await admin.auth().getUser(userRecord.uid);
+    await admin.auth().generateEmailVerificationLink(user.email, actionCodeSettings).then((link) => {
+      // Send the link to the user's email
+      const mailOptions = {
+        from: 'your-email@example.com',
+        to: user.email,
+        subject: 'Verify your email',
+        html: `<p>Click <a href="${link}">here</a> to verify your email.</p>`
+      };
+
+      // Assuming you have a mailer function set up
+      mailer.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email verification:', error);
+        } else {
+          console.log('Email verification sent:', info.response);
+        }
+      });
+
+      const userData = {
+        uid: userRecord.uid,
+        email: userRecord.email,
+        displayName: userRecord.displayName,
+        // Add any other user properties you want to return
+      };
+    });
   }
 	catch (error)
   {

@@ -24,10 +24,6 @@ document.getElementById('signin-form').addEventListener('submit', async (event) 
   }
 });
 
-
-
-
-
 const togglePassword = document.getElementById('togglePassword');
   togglePassword.addEventListener('click', () => {
     // Toggle the type attribute using getAttribute() and setAttribute()

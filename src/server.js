@@ -19,6 +19,18 @@ const requestHandler = (req, res) => {
 	{
 		openFile(url, res);
 	}
+	else if (url === '/homepage' && req.method === 'GET')
+	{
+		openFile(url, res);
+	}
+	else if (url === '/reset_password' && req.method === 'GET')
+	{
+		openFile(url, res)
+	}
+	else if (url === '/reset_password_request' && req.method === 'GET')
+	{
+		openFile(url, res);
+	}
 	else if (url.match(/\.css$/))
 	{
 		fs.readFile(path.join(__dirname, "../public/css", url), (err, data) => {

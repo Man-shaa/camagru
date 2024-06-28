@@ -3,6 +3,7 @@ const url = require('url');
 const path = require('path');
 
 const userController = require('./controllers/userController');
+const passwordResetController = require('./controllers/passwordResetController');
 
 // Handle routes
 const router = async (req, res) => {
@@ -23,9 +24,17 @@ const router = async (req, res) => {
   {
     await handleSignIn(req, res);
   }
-  else if (pathname === '/homepage' && method === 'GET')
+  else if (pathname === '/reset_password' && method === 'POST')
   {
-    serveStaticFile(path.join(__dirname, '../public/pages/homepage.html'), 'text/html', res);
+    await handlePasswordReset(req, res);
+  }
+  else if (pathname === '/reset_password_request' && method === 'POST')
+  {
+    await handlePasswordResetRequest(req, res);
+  }
+  else if (pathname === '/reset_password_form' && method === 'POST')
+  {
+    await handleNewPassword(req, res);
   }
   else if (pathname === '/users' && method === 'GET')
     await userController.getUsers();
@@ -65,6 +74,32 @@ const handleSignIn = async (req, res) => {
     await userController.signin(req.body, res);
   });
 }
+
+const handlePasswordResetRequest = async (req, res) => {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+  req.on("end", async () => {
+    const formData = parseFormData(body);
+    // For now, directly redirect to the reset password form page
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: true }));
+  });
+};
+
+const handleNewPassword = async (req, res) => {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+  req.on("end", async () => {
+    const formData = parseFormData(body);
+    // Here you can handle the logic to update the user's password
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: true }));
+  });
+};
 
 const serveStaticFile = (filePath, contentType, res) => {
   fs.readFile(filePath, (err, data) => {
