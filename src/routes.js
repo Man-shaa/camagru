@@ -3,6 +3,7 @@ const url = require('url');
 const path = require('path');
 
 const userController = require('./controllers/userController');
+const authController = require('./controllers/authController');
 const passwordResetController = require('./controllers/passwordResetController');
 
 // Handle routes
@@ -64,7 +65,7 @@ const handleCheckVerification = async (req, res) => {
   });
   req.on("end", async () => {
     req.body = parseFormData(body);
-    await userController.checkVerification(req.body, res);
+    await authController.checkVerification(req.body, res);
   });
 };
 
@@ -75,7 +76,7 @@ const handleSignUp = async (req, res) => {
   });
   req.on("end", async () => {
     req.body = parseFormData(body);
-    await userController.signUp(req.body, res);
+    await authController.signUp(req.body, res);
   });
 };
 
@@ -86,7 +87,7 @@ const handleSignIn = async (req, res) => {
   });
   req.on("end", async () => {
     req.body = parseFormData(body);
-    await userController.signIn(req.body, res);
+    await authController.signIn(req.body, res);
   });
 }
 
