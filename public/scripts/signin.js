@@ -2,8 +2,6 @@ document.getElementById('signin-form').addEventListener('submit', async (event) 
 
   event.preventDefault(); // Prevent the form from submitting the default way
 
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
   const formData = new FormData(event.target);
   try {
     const response = await fetch('/signin', {
@@ -12,7 +10,6 @@ document.getElementById('signin-form').addEventListener('submit', async (event) 
         'Content-Type': 'application/json',
       },
       body: new URLSearchParams(formData),
-      // body: JSON.stringify({ email, password }),
     });
 
     if (response.ok) {
@@ -21,6 +18,7 @@ document.getElementById('signin-form').addEventListener('submit', async (event) 
   }
   catch (error)
   {
+    console.error('Error:', error);
   }
 });
 

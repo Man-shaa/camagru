@@ -1,7 +1,10 @@
 require('../firebase/firebase');
 const admin = require("../firebase/firebaseAdmin");
-const { getAuth, signInWithEmailAndPassword } = require("firebase/auth");
-const mailer = require('../mailer');
+const { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification } = require("firebase/auth");
+
+
+const auth = getAuth();
+
 
 /**
  * Return all users in the database
@@ -51,54 +54,47 @@ const getUserByUID = async (uid) =>
  * Create a new user when signing up at /signup
 *  @param {Object} body - {email, password}
 */ 
-const createUser = async (body, res) =>
+const signUp = async (body, res) =>
 {
-  try
-  {
-    const { email, password } = body;
-    const userRecord = await admin.auth().createUser({
-      email: email,
-      password: password,
-      emailVerified: false
-      // Add any other user properties you want to set
-    });
-    // Send verification email
-    const actionCodeSettings = {
-      url: 'http://localhost:3000', // URL to redirect to after verification
-      handleCodeInApp: true,
-    };
-    
-    const user = await admin.auth().getUser(userRecord.uid);
-    await admin.auth().generateEmailVerificationLink(user.email, actionCodeSettings).then((link) => {
-      // Send the link to the user's email
-      const mailOptions = {
-        from: 'your-email@example.com',
-        to: user.email,
-        subject: 'Verify your email',
-        html: `<p>Click <a href="${link}">here</a> to verify your email.</p>`
-      };
+  const { email, password } = body;
 
-      // Assuming you have a mailer function set up
-      mailer.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending email verification:', error);
-        } else {
-          console.log('Email verification sent:', info.response);
-        }
-      });
+  await createUserWithEmailAndPassword(auth, email, password)
+  .then(async (userCredential) => {
+    const user = userCredential.user;
 
-      const userData = {
-        uid: userRecord.uid,
-        email: userRecord.email,
-        displayName: userRecord.displayName,
-        // Add any other user properties you want to return
-      };
-    });
-  }
-	catch (error)
-  {
+    console.log("send email verification to user: ", user.email);
+    await sendEmailVerification(user)
+
+    console.log("Email verification sent!")
+
+    res.writeHead(302, { 'Location': '/verify_email' });
+    res.end();
+  })
+  .catch((error) => {
+    console.error('Error creating user:', error.message);
+  });
+};
+
+const checkVerification = async (req, res) => {
+  try {
+    const user = auth.currentUser;
+
+    if (user) {
+      console.log("user's email status :", user.emailVerified);
+      await user.reload();
+      if (user.emailVerified === true) {
+        res.writeHead(302, { 'Location': '/signin' });
+      }
+      else {
+        res.writeHead(302, { 'Location': '/verify_email' });
+      }
+    } else {
+      res.writeHead(302, { 'Location': '/signin' });
+    }
+    res.end();
+  } catch (error) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Failed to create user', details: error.message }));
+    res.end(JSON.stringify({ error: 'Failed to check verification status', details: error.message }));
   }
 };
 
@@ -106,7 +102,7 @@ const createUser = async (body, res) =>
  * Sign in a user when signing in at /signin
  * @param {Object} body - {email, password}
 */
-const signin = async (body, res) => {
+const signIn = async (body, res) => {
   try
   {
     const email = body.email;
@@ -138,6 +134,7 @@ const signin = async (body, res) => {
 module.exports = {
   getUsers,
 	getUserByUID,
-	createUser,
-  signin,
+	signUp,
+  signIn,
+  checkVerification
 };

@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+
   const togglePassword = document.getElementById('togglePassword');
   const password = document.getElementById('password');
 

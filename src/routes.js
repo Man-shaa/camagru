@@ -38,6 +38,10 @@ const router = async (req, res) => {
   }
   else if (pathname === '/users' && method === 'GET')
     await userController.getUsers();
+  else if (pathname === '/check-verification' && method === 'POST')
+  {
+    await handleCheckVerification(req, res);
+  }
   else
   {
     res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -53,6 +57,17 @@ const parseFormData = (body) => {
   }, {});
 };
 
+const handleCheckVerification = async (req, res) => {
+  let body = "";
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+  req.on("end", async () => {
+    req.body = parseFormData(body);
+    await userController.checkVerification(req.body, res);
+  });
+};
+
 const handleSignUp = async (req, res) => {
   let body = "";
   req.on("data", (chunk) => {
@@ -60,7 +75,7 @@ const handleSignUp = async (req, res) => {
   });
   req.on("end", async () => {
     req.body = parseFormData(body);
-    await userController.createUser(req.body, res);
+    await userController.signUp(req.body, res);
   });
 };
 
@@ -71,7 +86,7 @@ const handleSignIn = async (req, res) => {
   });
   req.on("end", async () => {
     req.body = parseFormData(body);
-    await userController.signin(req.body, res);
+    await userController.signIn(req.body, res);
   });
 }
 

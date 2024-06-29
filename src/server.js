@@ -31,6 +31,10 @@ const requestHandler = (req, res) => {
 	{
 		openFile(url, res);
 	}
+	else if (url === '/verify_email' && req.method === 'GET')
+	{
+		openFile(url, res);
+	}
 	else if (url.match(/\.css$/))
 	{
 		fs.readFile(path.join(__dirname, "../public/css", url), (err, data) => {
