@@ -11,13 +11,17 @@
 <body>
   <header>
     <h1 class="title-container">Camagru</h1>
-    <div id="signin-button-container" class="signin-button-container">
-      <a href="/signin" class="signin-button">Login</a>
+    <div id="signin-btn-container" class="signin-btn-container" style="display: none;">
+      <a href="/signin" class="signin-btn">Login</a>
+    </div>
+    <div id="logout-btn-container" class="logout-btn-container" style="display: none;">
+      <a href="/signin" id="logout" class="logout-btn">Logout</a>
     </div>
   </header>
 
   <div>logged in user uid: <span id="loggedUserUid"></span></div>
   <div>logged in user email : <span id="loggedUserEmail"></span></div>
+
   <footer>
     <p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
   </footer>

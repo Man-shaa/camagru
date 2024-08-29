@@ -35,32 +35,53 @@ header {
   left: 50%;
   transform: translateX(-50%);
 }
-
-.signin-button-container {
+/* Ensures both buttons are positioned correctly */
+.signin-btn-container, .logout-btn-container {
   position: absolute;
   top: 50%;
   right: 20px;
   transform: translateY(-50%);
 }
 
-.signin-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px 25px;
+.signin-btn {
+  display: inline-block;
+  padding: 12px 24px;
   font-size: 16px;
-  background-color: #007BFF;
+  font-weight: bold;
   color: #fff;
-  border: none;
-  border-radius: 18px;
+  background-color: #007BFF;
+  border: 2px solid transparent;
+  border-radius: 25px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  box-sizing: border-box;
+  text-align: center;
   text-decoration: none;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
 }
 
-.signin-button:hover {
+.signin-btn:hover {
   background-color: #0056b3;
+}
+
+.logout-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #dc3545; /* Red color to signify action */
+  border: 2px solid transparent;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+.logout-btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+  border-color: #bd2130;
 }
 
 main {
