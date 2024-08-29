@@ -169,3 +169,12 @@ form {
   transition: opacity 1s ease-in-out; /* Smooth transition for fade-out */
   display: none; /* Start hidden */
 }
+
+footer {
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
+}

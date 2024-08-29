@@ -3,32 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Homepage</title>
+  <title>Camagru - Homepage</title>
   <link rel="stylesheet" href="/homepage.css">
 
-  <!-- Include Firebase SDKs (defer to ensure correct loading order) -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js" defer></script>
-
-  <script src="/firebase.js" defer></script>
-  <script src="/homepage.js"></script>
+  <script src="/firebase.js" type="module" defer></script>
 </head>
 <body>
   <header>
     <h1 class="title-container">Camagru</h1>
     <div id="signin-button-container" class="signin-button-container">
-      <a href="/signin" class="signin-button">Signin</a>
+      <a href="/signin" class="signin-button">Login</a>
     </div>
   </header>
 
-  <main>
-    <div>
-      <!-- Main content here -->
-    </div>
-  </main>
-
+  <div>logged in user uid: <span id="loggedUserUid"></span></div>
+  <div>logged in user email : <span id="loggedUserEmail"></span></div>
   <footer>
     <p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
   </footer>
+  <script src="/homepage.js" type="module"></script>
 </body>
 </html>
