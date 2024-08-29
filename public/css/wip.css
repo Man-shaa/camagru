@@ -1,0 +1,49 @@
+/* Enhanced Style for the "Working on this page" message */
+body {
+  background-color: #f0f8ff; /* Light blue background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+.container {
+  text-align: center;
+  background-color: #ffffff; /* White background for the message box */
+  padding: 50px;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+  max-width: 500px;
+  width: 100%;
+}
+
+h1 {
+  font-size: 28px; /* Bigger font size */
+  color: #333;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 18px; /* Slightly larger font size */
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6; /* Improved readability */
+}
+
+.home-button {
+  text-decoration: none;
+  color: #ffffff; /* White text */
+  background-color: #ff7f50; /* Coral color for the button */
+  padding: 12px 25px;
+  border-radius: 25px; /* Rounded corners */
+  font-size: 18px; /* Larger font size for the button */
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+.home-button:hover {
+  background-color: #ff6347; /* Slightly darker coral on hover */
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}

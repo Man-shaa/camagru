@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    volumes:
+      - ./public:/usr/src/app/public
+      - ./src:/usr/src/app/src
+    env_file:
+      - .env
+    command: sh -c "${COMMAND:-npm run start}"
