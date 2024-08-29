@@ -37,6 +37,7 @@ header {
 }
 /* Ensures both buttons are positioned correctly */
 .signin-btn-container, .logout-btn-container {
+  display: none;
   position: absolute;
   top: 50%;
   right: 20px;

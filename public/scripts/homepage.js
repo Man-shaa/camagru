@@ -7,11 +7,12 @@ const db = getFirestore();
 const signinBtnContainer = document.getElementById('signin-btn-container');
 const logoutBtnContainer = document.getElementById('logout-btn-container');
 
+signinBtnContainer.style.display = 'none';
+logoutBtnContainer.style.display = 'none';
+
 onAuthStateChanged(auth, (user) => {
 	const loggedUser = localStorage.getItem('loggedUser');
 	if (loggedUser) {
-		// show logout button
-		signinBtnContainer.style.display = 'none';
     logoutBtnContainer.style.display = 'block';
 
 		const docRef = doc(db, 'users', loggedUser);
@@ -36,7 +37,6 @@ onAuthStateChanged(auth, (user) => {
 	{
 		// No user is logged in, show the signin button
     signinBtnContainer.style.display = 'block';
-    logoutBtnContainer.style.display = 'none';
 
 		console.log('user Id not found in local storage');
 	}
