@@ -158,3 +158,14 @@ form {
 .login-link a:hover {
   text-decoration: underline;
 }
+
+.messageDiv {
+  background-color: hsl(327, 90%, 28%);
+  color: white;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: opacity 1s ease-in-out; /* Smooth transition for fade-out */
+  display: none; /* Start hidden */
+}
