@@ -38,16 +38,16 @@ signupForm.addEventListener("click", (e) => {
         uid: cred.user.uid,
       };
       showMessage("User created successfully", "signupMessage")
-      // const docRef = doc(db, "users", userData.uid);
-      // setDoc(docRef, userData)
-      // .then(() => {
-      //   setTimeout(() => {
-      //     window.location.href = "/signin";
-      //   }, 2000);
-      // })
-      // .catch((error) => {
-      //   console.log("error writting document: ", error);
-      // });
+      const docRef = doc(db, "users", userData.uid);
+      setDoc(docRef, userData)
+      .then(() => {
+        setTimeout(() => {
+          window.location.href = "/signin";
+        }, 2000);
+      })
+      .catch((error) => {
+        console.log("error writting document: ", error);
+      });
     })
     .catch((error) => {
       const errorCode = error.code;
