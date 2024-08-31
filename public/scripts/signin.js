@@ -30,11 +30,6 @@ signinForm.addEventListener('click', (e) => {
 	signInWithEmailAndPassword(auth, email, password)
 	.then((cred) => {
 		showMessage('Successfully logged in', 'signinMessage');
-		const userData = {
-			email: email,
-			uid: cred.user.uid,
-		};
-		localStorage.setItem('loggedUser', userData.uid);
 		setTimeout(() => {
 			window.location.href = '/homepage';
 		}, 2000);
