@@ -1,38 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Camagru - Homepage</title>
-  <link rel="stylesheet" href="/homepage.css">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camagru - Homepage</title>
+    <link rel="stylesheet" href="/homepage.css">
+    <script src="/firebase.js" type="module" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1 class="title-container">Camagru</h1>
+      <div id="signin-btn-container" class="signin-btn-container" style="display: none;">
+        <a href="/signin" class="signin-btn">Login</a>
+      </div>
+      <div id="logout-btn-container" class="logout-btn-container" style="display: none;">
+        <a href="/signin" id="logout" class="logout-btn">Logout</a>
+      </div>
+    </header>
 
-  <script src="/firebase.js" type="module" defer></script>
-</head>
-<body>
-  <header>
-    <h1 class="title-container">Camagru</h1>
-    <div id="signin-btn-container" class="signin-btn-container" style="display: none;">
-      <a href="/signin" class="signin-btn">Login</a>
-    </div>
-    <div id="logout-btn-container" class="logout-btn-container" style="display: none;">
-      <a href="/signin" id="logout" class="logout-btn">Logout</a>
-    </div>
-  </header>
+    <main class="container">
+      <div id="imagesContainer" class="images-container">
+        <!-- Dynamically added images will go here -->
+      </div>
+      
+      <form id="uploadForm" class="upload-form">
+        <div id="upload-container" class="upload-container">
+          <!-- Hidden file input -->
+          <input type="file" id="fileInput" accept="image/*" hidden />
+          <!-- Visible button that triggers the file input -->
+          <button type="button" id="uploadButton" class="upload-btn">Upload Image</button>
+        </div>
+      </form>
+    </main>
 
-  <div class="container">
-    <div id="imagesContainer" class="images-container">
-      <!-- Images will be dynamically inserted here -->
-    </div>
-  </div>
+    <footer>
+      <p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
+    </footer>
 
-  <form id="uploadForm">
-    <input type="file" id="fileInput" accept="image/*" />
-    <button type="button" id="uploadButton">Upload Image</button>
-  </form>
-
-  <footer>
-    <p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
-  </footer>
-  <script src="/homepage.js" type="module"></script>
-</body>
+    <script src="/homepage.js" type="module"></script>
+  </body>
 </html>

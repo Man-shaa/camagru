@@ -9,13 +9,40 @@ const storage = getStorage();
 let currentUser = null;
 const signinBtnContainer = document.getElementById('signin-btn-container');
 const logoutBtnContainer = document.getElementById('logout-btn-container');
+const uploadBtnContainer = document.getElementById('upload-container');
+
+uploadBtnContainer.style.display = 'none';
 signinBtnContainer.style.display = 'none';
 logoutBtnContainer.style.display = 'none';
+
+const imagesCollectionRef = collection(db, 'images');
+
+getDocs(imagesCollectionRef)
+.then((querySnapshot) => {
+	const imagesContainer = document.getElementById('imagesContainer');
+	imagesContainer.innerHTML = '';
+
+	querySnapshot.forEach((doc) => {
+		const imageUrl = doc.data().imageUrl; // Get image URL from Firestore
+
+		// Create an img element and set its src to the image URL
+		const imgElement = document.createElement('img');
+		imgElement.src = imageUrl;
+		imgElement.className = 'image';
+		imgElement.alt = 'User uploaded image';
+
+		// Append the image element to the container
+		imagesContainer.appendChild(imgElement);
+	});
+})
+.catch((error) => {
+	console.log("Error getting document:", error);
+});
 
 const storageRef = ref(storage, 'images');
 
 // add a new image ULR to the firestore database and uplaod it on firebase storage when clicking on upload button
-document.getElementById('uploadButton').addEventListener('click', async () => {
+document.getElementById('fileInput').addEventListener('change', function(event) {
 	if (!currentUser) {
 		// No user is logged in, show the signin button or redirect to signin page
 		console.log("user must be logged to upload an image");
@@ -51,18 +78,21 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
 				})
 				.then((docRef) => {
 					const imagesContainer = document.getElementById('imagesContainer');
+				
+					const imageDiv = document.createElement('div');
+					imageDiv.className = 'image'; // Apply the CSS class for styling
+				
 					const imgElement = document.createElement('img');
 					imgElement.src = url;
 					imgElement.alt = 'User uploaded image';
-					imgElement.width = 300;
-					imgElement.height = 200;
-					imgElement.className = 'uploaded-image';
-
-					imagesContainer.appendChild(imgElement);
+					imgElement.className = 'uploaded-image'; // Ensure this class matches the CSS
+				
+					imageDiv.appendChild(imgElement);
+					imagesContainer.appendChild(imageDiv);
+				
 					console.log("Document written with ID: ", docRef.id);
-					window.location.reload(); // This will refresh the
-
-				})
+					window.location.reload();
+				});
 			})
 			.catch((error) => {
 				console.log("Error getting download URL: ", error);
@@ -74,7 +104,7 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
 	}
 	else {
 		// change this to a message on the page instead of an alert
-    alert('No file selected.');
+    // alert('No file selected.');
   }
 });
 
@@ -82,32 +112,8 @@ onAuthStateChanged(auth, (user) => {
 	console.log("user status : ", user);
 	if (user) {
     logoutBtnContainer.style.display = 'block';
+		uploadBtnContainer.style.display = 'flex';
 		currentUser = user;
-
-		const imagesCollectionRef = collection(db, 'images');
-
-		getDocs(imagesCollectionRef)
-		.then((querySnapshot) => {
-
-			const imagesContainer = document.getElementById('imagesContainer');
-			imagesContainer.innerHTML = '';
-
-			querySnapshot.forEach((doc) => {
-				const imageUrl = doc.data().imageUrl; // Get image URL from Firestore
-	
-				// Create an img element and set its src to the image URL
-				const imgElement = document.createElement('img');
-				imgElement.src = imageUrl;
-				imgElement.className = 'image';
-				imgElement.alt = 'User uploaded image';
-
-				// Append the image element to the container
-				imagesContainer.appendChild(imgElement);
-			});
-		})
-		.catch((error) => {
-			console.log("Error getting document:", error);
-		});
 	}
 	else
 	{
@@ -130,6 +136,11 @@ logoutButton.addEventListener('click', () => {
 	});
 });
 
+
+document.getElementById('uploadButton').addEventListener('click', function() {
+  // Programmatically click the hidden file input when the button is clicked
+  document.getElementById('fileInput').click();
+});
 // /* prod only, delete all images in firebase storage / firestore */
 // function deleteAllImages() {
 // 	// delete from firestore

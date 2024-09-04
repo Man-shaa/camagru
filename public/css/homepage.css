@@ -1,13 +1,15 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+/* Ensure the html and body take up full height */
+html, body {
+  height: 100%;
   margin: 0;
-  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Flex container for body to push footer to bottom */
+body {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+  min-height: 100vh; /* Full viewport height */
 }
 
 header {
@@ -22,7 +24,26 @@ header {
   justify-content: space-between;
   align-items: center;
   height: 50px;
-  z-index: 10; /* Keeps the header above other elements */
+  z-index: 10;
+}
+
+main {
+  flex: 1; /* Ensures the main content takes available space */
+  margin-top: 50px;
+  padding-top: 70px; /* Adjust based on the height of the header */
+  padding-bottom: 60px; /* Ensure space at the bottom for the footer */
+  overflow: auto; /* Allow scrolling if needed */
+}
+
+/* Footer adjustments */
+footer {
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  z-index: 9;
+  flex-shrink: 0; /* Prevents footer from shrinking */
 }
 
 .title-container {
@@ -45,13 +66,12 @@ header {
   transform: translateY(-50%);
 }
 
-.signin-btn {
+.signin-btn, .logout-btn, .upload-btn {
   display: inline-block;
   padding: 12px 24px;
   font-size: 16px;
   font-weight: bold;
   color: #fff;
-  background-color: #007BFF;
   border: 2px solid transparent;
   border-radius: 25px;
   cursor: pointer;
@@ -59,26 +79,23 @@ header {
   text-decoration: none;
   transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+.signin-btn {
+  background-color: #007BFF;
+}
+
+.logout-btn {
+  background-color: #dc3545; /* Red color to signify action */
+}
+
+.upload-btn {
+  background-color: #28a745; /* Green color for upload button */
+  margin-top: 20px 40%; /* Optional: Adds some space above the button */
 }
 
 .signin-btn:hover {
   background-color: #0056b3;
-}
-
-.logout-btn {
-  display: inline-block;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff;
-  background-color: #dc3545; /* Red color to signify action */
-  border: 2px solid transparent;
-  border-radius: 25px;
-  cursor: pointer;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
 }
 
 .logout-btn:hover {
@@ -86,9 +103,16 @@ header {
   border-color: #bd2130;
 }
 
-main {
-  margin-top: 80px;
-  text-align: center;
+.upload-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+  border-color: #1e7e34;
+}
+
+.upload-container {
+  display: flex;
+  justify-content: center; /* Centers the button horizontally */
+  align-items: center; /* Centers the button vertically */
+  margin-top: 20px; /* Adds some space above the container */
 }
 
 p {
@@ -100,6 +124,7 @@ p {
 
 .container {
   position: relative;
+  flex: 1; /* Makes the container take up the available space */
   padding-top: 100px; /* Adjust based on the height of the header */
 }
 
@@ -115,7 +140,6 @@ p {
 }
 
 .container .images-container {
-  margin-top: 50px;
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
@@ -125,38 +149,34 @@ p {
   /* overflow-y: auto; /* Ajoute un défilement si nécessaire * */
 }
 
-.container .images-container .image {
-  height: 180px;
-  width: 250px;
-  border: 10px solid #fff;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
-  overflow: hidden;
-  cursor:pointer ;
+/* Ensure the container has some space above */
+.container {
+  padding: 20px;
 }
 
+/* Flex container for images */
+.images-container {
+  padding-top: 50px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  padding: 10px;
+}
+
+/* Style for individual image containers */
 .image {
-  height: 100%;
-  width: 100%;
-  border: 10px solid #fff;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, .1);
-  overflow: hidden;
+  position: relative;
   cursor: pointer;
-  transition: transform 0.3s ease; /* Smooth transition effect for scaling */
-  object-fit: cover;
-  flex: 0 1 250; /* Allows the item to shrink if needed */
+  width: 300px; /* Width of the image container */
+  height: 200px; /* Height of the image container */
+  overflow: hidden; /* Ensures image scaling does not overflow */
+  border: 5px solid #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Hover effect */
 .image:hover {
-  transform: scale(1.03); /* Slightly less scale to avoid overflow */
-  z-index: 1;
+  transform: scale(1.05); /* Zoom effect */
 }
 
-footer {
-  background-color: #333;
-  color: #fff;
-  width: 100%;
-  text-align: center;
-  position: fixed;
-  bottom: 0;
-  z-index: 10;
-}
