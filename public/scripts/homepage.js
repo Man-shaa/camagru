@@ -60,6 +60,8 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
 
 					imagesContainer.appendChild(imgElement);
 					console.log("Document written with ID: ", docRef.id);
+					window.location.reload(); // This will refresh the
+
 				})
 			})
 			.catch((error) => {
@@ -96,10 +98,8 @@ onAuthStateChanged(auth, (user) => {
 				// Create an img element and set its src to the image URL
 				const imgElement = document.createElement('img');
 				imgElement.src = imageUrl;
+				imgElement.className = 'image';
 				imgElement.alt = 'User uploaded image';
-				imgElement.width = 300
-				imgElement.height = 200
-				imgElement.className = 'uploaded-image';
 
 				// Append the image element to the container
 				imagesContainer.appendChild(imgElement);
