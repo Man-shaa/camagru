@@ -1,6 +1,6 @@
 import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, getDocs, addDoc, collection, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
+import { getFirestore, getDocs, addDoc, deleteDoc, collection, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, deleteObject, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -14,6 +14,7 @@ logoutBtnContainer.style.display = 'none';
 
 const storageRef = ref(storage, 'images');
 
+// add a new image ULR to the firestore database and uplaod it on firebase storage when clicking on upload button
 document.getElementById('uploadButton').addEventListener('click', async () => {
 	if (!currentUser) {
 		// No user is logged in, show the signin button or redirect to signin page
@@ -47,7 +48,19 @@ document.getElementById('uploadButton').addEventListener('click', async () => {
 					imageUrl : url,
 					fileName: file.name,
 					userId: currentUser.uid
-				});
+				})
+				.then((docRef) => {
+					const imagesContainer = document.getElementById('imagesContainer');
+					const imgElement = document.createElement('img');
+					imgElement.src = url;
+					imgElement.alt = 'User uploaded image';
+					imgElement.width = 300;
+					imgElement.height = 200;
+					imgElement.className = 'uploaded-image';
+
+					imagesContainer.appendChild(imgElement);
+					console.log("Document written with ID: ", docRef.id);
+				})
 			})
 			.catch((error) => {
 				console.log("Error getting download URL: ", error);
@@ -84,12 +97,13 @@ onAuthStateChanged(auth, (user) => {
 				const imgElement = document.createElement('img');
 				imgElement.src = imageUrl;
 				imgElement.alt = 'User uploaded image';
+				imgElement.width = 300
+				imgElement.height = 200
 				imgElement.className = 'uploaded-image';
-	
+
 				// Append the image element to the container
 				imagesContainer.appendChild(imgElement);
 			});
-
 		})
 		.catch((error) => {
 			console.log("Error getting document:", error);
@@ -115,3 +129,31 @@ logoutButton.addEventListener('click', () => {
 		console.log('Error signing out:', error);
 	});
 });
+
+// /* prod only, delete all images in firebase storage / firestore */
+// function deleteAllImages() {
+// 	// delete from firestore
+// 	// const imagesCollectionRef = collection(db, 'images');
+// 	// // Get all documents in the collection
+// 	// const querySnapshot = getDocs(imagesCollectionRef)
+// 	// .then((querySnapshot) => {
+// 	// 	console.log("querySnapshot : ", querySnapshot);
+// 	// });
+
+// 	// // Loop through each document and delete it
+// 	// const deletePromises = querySnapshot.docs.map((doc) => deleteDoc(doc.ref));
+
+	
+	
+// 	// delete from storage
+// 	const imageStorageRef = ref(storage, 'images/');
+// 	deleteObject(imageStorageRef).then(() => {
+// 		console.log("All images deleted successfully");
+// 		// File deleted successfully
+// 	}).catch((error) => {
+// 		console.log("Error deleting file: ", error);
+// 		// Uh-oh, an error occurred!
+// 	});
+// }
+
+// deleteAllImages();
