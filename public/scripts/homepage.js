@@ -41,6 +41,7 @@ getDocs(imagesCollectionRef)
 
 const storageRef = ref(storage, 'images');
 
+
 // add a new image ULR to the firestore database and uplaod it on firebase storage when clicking on upload button
 document.getElementById('fileInput').addEventListener('change', function(event) {
 	if (!currentUser) {
@@ -108,6 +109,7 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
   }
 });
 
+// User auth change listener
 onAuthStateChanged(auth, (user) => {
 	console.log("user status : ", user);
 	if (user) {
@@ -136,11 +138,30 @@ logoutButton.addEventListener('click', () => {
 	});
 });
 
+// Display popup image listener using event delegation
+document.querySelector('.images-container').addEventListener('click', (event) => {
+  // Check if the clicked element is an image
+  if (event.target.tagName === 'IMG') {
+    const clickedImage = event.target;
+    console.log("image clicked: ", clickedImage.src);
 
+    // Display the popup and set the image source
+    const popupImageContainer = document.querySelector('.popup-image');
+    popupImageContainer.style.display = 'block';
+    popupImageContainer.querySelector('img').src = clickedImage.src;
+  }
+});
+
+// close popup image listener using event delegation
+document.querySelector('.popup-image span').onclick = () => {
+	document.querySelector('.popup-image').style.display = 'none';
+};
+	
 document.getElementById('uploadButton').addEventListener('click', function() {
   // Programmatically click the hidden file input when the button is clicked
   document.getElementById('fileInput').click();
 });
+
 // /* prod only, delete all images in firebase storage / firestore */
 // function deleteAllImages() {
 // 	// delete from firestore

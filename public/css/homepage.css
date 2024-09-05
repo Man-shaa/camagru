@@ -43,7 +43,7 @@ footer {
   text-align: center;
   padding: 10px 0;
   z-index: 9;
-  flex-shrink: 0; /* Prevents footer from shrinking */
+  /* flex-shrink: 0; /*Prevents footer from shrinking */
 }
 
 .title-container {
@@ -126,6 +126,7 @@ p {
   position: relative;
   flex: 1; /* Makes the container take up the available space */
   padding-top: 100px; /* Adjust based on the height of the header */
+  padding: 20px;
 }
 
 .container h1 {
@@ -149,9 +150,44 @@ p {
   /* overflow-y: auto; /* Ajoute un défilement si nécessaire * */
 }
 
-/* Ensure the container has some space above */
-.container {
-  padding: 20px;
+.container .popup-image {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, .9);
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+}
+
+.container .popup-image span {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  font-size: 60px;
+  font-weight: bolder;
+  color: #fff;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.container .popup-image img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 5px solid #4f446e;
+  border-radius: 5px;
+  max-width: 70%;
+  max-height: 50%;
+  object-fit: cover;
+}
+
+@media (max-width: 650px) {
+  .container .popu-image img {
+    width: 95%;
+  }
 }
 
 /* Flex container for images */
