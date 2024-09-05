@@ -1,5 +1,5 @@
 import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, getDocs, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, getDocs, addDoc, collection, orderBy, query } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 
 // global variables
@@ -8,14 +8,6 @@ const db = getFirestore();
 const storage = getStorage();
 
 let currentUser = null;
-const signinBtnContainer = document.getElementById('signin-btn-container');
-const logoutBtnContainer = document.getElementById('logout-btn-container');
-const uploadBtnContainer = document.getElementById('upload-container');
-
-signinBtnContainer.style.display = 'none';
-logoutBtnContainer.style.display = 'none';
-
-const imagesCollectionRef = collection(db, 'images');
 const imagesPerPage = 5;
 let currentPage = 1;
 let totalImages = 0;
@@ -23,11 +15,16 @@ let totalImages = 0;
 
 // Fetch images from Firestore and handle pagination
 function fetchImages(page) {
-  getDocs(imagesCollectionRef)
-    .then((querySnapshot) => {
-      const imagesContainer = document.getElementById('imagesContainer');
-      imagesContainer.innerHTML = '';
+  const imagesContainer = document.getElementById('imagesContainer');
+  imagesContainer.innerHTML = '';
+	const imagesCollectionRef = collection(db, 'images');
 
+  // Create a query that orders by 'createdAt' in descending order
+  const imagesQuery = query(imagesCollectionRef, orderBy('createdAt', 'asc'));
+
+  getDocs(imagesQuery)
+    .then((querySnapshot) => {
+      // Update total number of images
       totalImages = querySnapshot.size;
 
       // Calculate the start and end index for images to display
@@ -37,7 +34,8 @@ function fetchImages(page) {
       // Iterate through Firestore documents and display images for the current page
       querySnapshot.docs.slice(startIndex, endIndex).forEach((doc) => {
         const imageUrl = doc.data().imageUrl;
-        createImageElement(imageUrl);
+				const fileName = doc.data().fileName;
+        createImageElement(imageUrl, fileName);
       });
 
       // Generate pagination buttons
@@ -48,36 +46,36 @@ function fetchImages(page) {
     });
 }
 
-// Helper function to create an image element and append it to the container
-function createImageElement(imageUrl) {
-  const imagesContainer = document.getElementById('imagesContainer');
-  const imgElement = document.createElement('img');
-  imgElement.src = imageUrl;
-  imgElement.className = 'image';
-  imgElement.alt = 'User uploaded image';
-  imagesContainer.appendChild(imgElement);
+function createImageElement(imageUrl, fileName) {
+	const imagesContainer = document.getElementById('imagesContainer');
+	const imgElement = document.createElement('img');
+	imgElement.src = imageUrl;
+	imgElement.className = 'image';
+	imgElement.alt = 'User uploaded image';
+	imgElement.dataset.fileName = fileName; // Store file name as data attribute
+	imagesContainer.appendChild(imgElement);
 }
 
 // Function to generate pagination buttons
 function generatePaginationButtons() {
-  const paginationContainer = document.getElementById('pagination');
-  paginationContainer.innerHTML = '';
+	const paginationContainer = document.getElementById('pagination');
+	paginationContainer.innerHTML = '';
 
-  const totalPages = Math.ceil(totalImages / imagesPerPage);
+	const totalPages = Math.ceil(totalImages / imagesPerPage);
 
-  for (let i = 1; i <= totalPages; i++) {
-    const button = document.createElement('button');
-    button.innerText = i;
-    button.classList.add('page-btn');
-    if (i === currentPage) {
-      button.classList.add('active');
-    }
-    button.addEventListener('click', () => {
-      currentPage = i;
-      fetchImages(currentPage);
-    });
-    paginationContainer.appendChild(button);
-  }
+	for (let i = 1; i <= totalPages; i++) {
+		const button = document.createElement('button');
+		button.innerText = i;
+		button.classList.add('page-btn');
+		if (i === currentPage) {
+			button.classList.add('active');
+		}
+		button.addEventListener('click', () => {
+			currentPage = i;
+			fetchImages(currentPage);
+		});
+		paginationContainer.appendChild(button);
+	}
 }
 
 // Initial fetch of images for the first page
@@ -85,95 +83,103 @@ fetchImages(currentPage);
 
 // Upload and add a new image to Firestore when clicking on upload button
 document.getElementById('fileInput').addEventListener('change', function(event) {
-  if (!currentUser) {
-    console.log("user must be logged to upload an image");
-    return;
-  }
+	if (!currentUser) {
+		console.log("user must be logged to upload an image");
+		return;
+	}
 
-  const file = event.target.files[0];
-  if (file) {
-    const uniqueFileName = `${currentUser.uid}_${Date.now()}_${file.name}`;
-    const imageStorageRef = ref(storage, 'images/' + uniqueFileName);
-    const metadata = {
-      customMetadata: {
-        userId: currentUser.uid,
-        fileName: file.name
-      }
-    };
+	const file = event.target.files[0];
+	if (file) {
+		const uniqueFileName = `${currentUser.uid}_${Date.now()}_${file.name}`;
+		const imageStorageRef = ref(storage, 'images/' + uniqueFileName);
+		const metadata = {
+			customMetadata: {
+				userId: currentUser.uid,
+				fileName: file.name
+			}
+		};
 
-    uploadBytes(imageStorageRef, file, metadata)
-    .then((snapshot) => {
-      console.log(`Uploaded ${file.name}!`);
+		uploadBytes(imageStorageRef, file, metadata)
+		.then((snapshot) => {
+			console.log(`Uploaded ${file.name}!`);
 
-      getDownloadURL(snapshot.ref)
-      .then((url) => {
-        console.log('File available at', url);
+			getDownloadURL(snapshot.ref)
+			.then((url) => {
+				console.log('File available at', url);
 
-        addDoc(collection(db, 'images'), {
-          UniqueImageName: uniqueFileName,
-          imageUrl: url,
-          fileName: file.name,
-          userId: currentUser.uid
-        })
-        .then((docRef) => {
-          createImageElement(url);
-          console.log("Document written with ID: ", docRef.id);
-          window.location.reload();
-        });
-      })
-      .catch((error) => {
-        console.log("Error getting download URL: ", error);
-      });
-    })
-    .catch((error) => {
-      console.log("Error uploading file: ", error);
-    });
-  }
+				addDoc(collection(db, 'images'), {
+					UniqueImageName: uniqueFileName,
+					imageUrl: url,
+					fileName: file.name,
+					userId: currentUser.uid,
+					createdAt: new Date()
+				})
+				.then((docRef) => {
+					createImageElement(url);
+					console.log("Document written with ID: ", docRef.id);
+					window.location.reload();
+				});
+			})
+			.catch((error) => {
+				console.log("Error getting download URL: ", error);
+			});
+		})
+		.catch((error) => {
+			console.log("Error uploading file: ", error);
+		});
+	}
 });
 
 // User auth change listener
 onAuthStateChanged(auth, (user) => {
-  console.log("user status: ", user);
-  if (user) {
-    logoutBtnContainer.style.display = 'block';
-    uploadBtnContainer.style.display = 'flex';
-    currentUser = user;
-  } else {
-    signinBtnContainer.style.display = 'block';
-  }
+	console.log("user status: ", user);
+	const signinBtnContainer = document.getElementById('signin-btn-container');
+	const logoutBtnContainer = document.getElementById('logout-btn-container');
+	const uploadBtnContainer = document.getElementById('upload-container');
+
+	if (user) {
+		logoutBtnContainer.style.display = 'block';
+		uploadBtnContainer.style.display = 'flex';
+		currentUser = user;
+	} else {
+		signinBtnContainer.style.display = 'block';
+	}
 });
 
 const logoutButton = document.getElementById('logout');
 
+// Logout button listener
 logoutButton.addEventListener('click', () => {
-  signOut(auth)
-  .then(() => {
-    currentUser = null;
-    window.location.href = '/signin';
-  })
-  .catch((error) => {
-    console.log('Error signing out:', error);
-  });
+	signOut(auth)
+	.then(() => {
+		currentUser = null;
+		window.location.reload();
+	})
+	.catch((error) => {
+		console.log('Error signing out:', error);
+	});
 });
 
 // Display popup image listener using event delegation
 document.querySelector('.images-container').addEventListener('click', (event) => {
-  if (event.target.tagName === 'IMG') {
-    const clickedImage = event.target;
-    console.log("image clicked: ", clickedImage.src);
+	if (event.target.tagName === 'IMG') {
+		const clickedImage = event.target;
+		const fileName = clickedImage.dataset.fileName;
+		console.log(fileName);
 
-    const popupImageContainer = document.querySelector('.popup-image');
-    popupImageContainer.style.display = 'block';
-    popupImageContainer.querySelector('img').src = clickedImage.src;
-  }
+		const popupImageContainer = document.querySelector('.popup-image');
+		popupImageContainer.style.display = 'block';
+		popupImageContainer.querySelector('img').src = clickedImage.src;
+		popupImageContainer.querySelector('.image-title').textContent = fileName; // Set the title to the file name
+	}
 });
 
 // Close popup image listener using event delegation
 document.querySelector('.popup-image span').onclick = () => {
-  document.querySelector('.popup-image').style.display = 'none';
+	document.querySelector('.popup-image').style.display = 'none';
 };
 
 // Trigger file input when the upload button is clicked
 document.getElementById('uploadButton').addEventListener('click', function() {
-  document.getElementById('fileInput').click();
+	document.getElementById('fileInput').click();
 });

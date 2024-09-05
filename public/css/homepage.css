@@ -43,7 +43,15 @@ footer {
   text-align: center;
   padding: 10px 0;
   z-index: 9;
-  /* flex-shrink: 0; /*Prevents footer from shrinking */
+}
+
+.image-title {
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  padding: 40px;
+  word-break: break-word; /* Break long titles */
+  text-align: center;
 }
 
 .title-container {
@@ -144,7 +152,6 @@ p {
 
 .container {
   position: relative;
-  flex: 1; /* Makes the container take up the available space */
   padding-top: 100px; /* Adjust based on the height of the header */
   padding: 20px;
 }
@@ -214,16 +221,6 @@ p {
   .container .popu-image img {
     width: 95%;
   }
-}
-
-/* Flex container for images */
-.images-container {
-  padding-top: 50px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-  justify-content: center;
-  padding: 10px;
 }
 
 /* Style for individual image containers */
