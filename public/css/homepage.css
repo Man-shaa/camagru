@@ -57,6 +57,7 @@ footer {
   left: 50%;
   transform: translateX(-50%);
 }
+
 /* Ensures both buttons are positioned correctly */
 .signin-btn-container, .logout-btn-container {
   display: none;
@@ -94,6 +95,25 @@ footer {
   margin-top: 20px 40%; /* Optional: Adds some space above the button */
 }
 
+.pagination button {
+  padding: 8px 12px;
+  margin: 0 5px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  background-color: #007BFF;
+  color: white;
+  border-radius: 4px;
+}
+
+.pagination button.active {
+  background-color: #0056b3;
+}
+
+.pagination button:hover {
+  background-color: #0057b390;
+}
+
 .signin-btn:hover {
   background-color: #0056b3;
 }
@@ -109,7 +129,7 @@ footer {
 }
 
 .upload-container {
-  display: flex;
+  display: none;
   justify-content: center; /* Centers the button horizontally */
   align-items: center; /* Centers the button vertically */
   margin-top: 20px; /* Adds some space above the container */
@@ -148,6 +168,12 @@ p {
   max-width: 100%; /* Ensures the container doesn't exceed the page width */
   padding: 10px;
   /* overflow-y: auto; /* Ajoute un défilement si nécessaire * */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .container .popup-image {
