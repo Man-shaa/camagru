@@ -103,6 +103,18 @@ footer {
   margin-top: 20px 40%; /* Optional: Adds some space above the button */
 }
 
+.delete-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  display: none;
+  font-size: 14px;
+}
+
 .pagination button {
   padding: 8px 12px;
   margin: 0 5px;

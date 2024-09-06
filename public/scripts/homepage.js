@@ -1,5 +1,5 @@
 import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, getDocs, addDoc, collection, orderBy, query } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, getDoc, getDocs, addDoc, collection, orderBy, query, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 
 // global variables
@@ -11,13 +11,13 @@ let currentUser = null;
 const imagesPerPage = 5;
 let currentPage = 1;
 let totalImages = 0;
+const imagesCollectionRef = collection(db, 'images');
 
 
 // Fetch images from Firestore and handle pagination
 function fetchImages(page) {
   const imagesContainer = document.getElementById('imagesContainer');
   imagesContainer.innerHTML = '';
-	const imagesCollectionRef = collection(db, 'images');
 
   // Create a query that orders by 'createdAt' in descending order
   const imagesQuery = query(imagesCollectionRef, orderBy('createdAt', 'asc'));
@@ -35,7 +35,7 @@ function fetchImages(page) {
       querySnapshot.docs.slice(startIndex, endIndex).forEach((doc) => {
         const imageUrl = doc.data().imageUrl;
 				const fileName = doc.data().fileName;
-        createImageElement(imageUrl, fileName);
+        createImageElement(imageUrl, fileName, doc.id);
       });
 
       // Generate pagination buttons
@@ -46,13 +46,14 @@ function fetchImages(page) {
     });
 }
 
-function createImageElement(imageUrl, fileName) {
+function createImageElement(imageUrl, fileName, docId) {
 	const imagesContainer = document.getElementById('imagesContainer');
 	const imgElement = document.createElement('img');
 	imgElement.src = imageUrl;
 	imgElement.className = 'image';
 	imgElement.alt = 'User uploaded image';
 	imgElement.dataset.fileName = fileName; // Store file name as data attribute
+	imgElement.setAttribute('data-doc-id', docId);
 	imagesContainer.appendChild(imgElement);
 }
 
@@ -101,12 +102,8 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 
 		uploadBytes(imageStorageRef, file, metadata)
 		.then((snapshot) => {
-			console.log(`Uploaded ${file.name}!`);
-
 			getDownloadURL(snapshot.ref)
 			.then((url) => {
-				console.log('File available at', url);
-
 				addDoc(collection(db, 'images'), {
 					UniqueImageName: uniqueFileName,
 					imageUrl: url,
@@ -116,7 +113,6 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 				})
 				.then((docRef) => {
 					createImageElement(url);
-					console.log("Document written with ID: ", docRef.id);
 					window.location.reload();
 				});
 			})
@@ -165,12 +161,35 @@ document.querySelector('.images-container').addEventListener('click', (event) =>
 	if (event.target.tagName === 'IMG') {
 		const clickedImage = event.target;
 		const fileName = clickedImage.dataset.fileName;
-		console.log(fileName);
+		const imageUrl = clickedImage.src;
 
 		const popupImageContainer = document.querySelector('.popup-image');
 		popupImageContainer.style.display = 'block';
 		popupImageContainer.querySelector('img').src = clickedImage.src;
-		popupImageContainer.querySelector('.image-title').textContent = fileName; // Set the title to the file name
+		popupImageContainer.querySelector('.image-title').textContent = fileName;
+
+		const deleteBtn = document.getElementById('delete-button');
+		deleteBtn.style.display = 'none';
+
+		// get userId from the image document in firestore
+		const docId = clickedImage.getAttribute('data-doc-id');
+		const imagePopupRef = doc(db, 'images', docId);
+
+		getDoc(imagePopupRef)
+		.then((docSnap) => {
+			if (docSnap.exists()) {
+				const userId = docSnap.data().userId;
+				if (currentUser && currentUser.uid === userId) {
+					deleteBtn.style.display = 'block';
+					deleteBtn.onclick = () => {
+						deleteImage(image); // Call the delete function
+					};
+				}
+			}
+			else {
+				console.log("Document does not exist");
+			}
+		})
 	}
 });
 
