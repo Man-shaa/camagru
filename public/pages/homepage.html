@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camagru - Homepage</title>
-    <link rel="stylesheet" href="/homepage.css">
+    <link rel="stylesheet" href="/homepage-components/homepage.css">
+    <link rel="stylesheet" href="/homepage-components/header.css">
+    <link rel="stylesheet" href="/homepage-components/upload.css">
+    <link rel="stylesheet" href="/homepage-components/popup-image.css">
+    <link rel="stylesheet" href="/homepage-components/pagination.css">
+    <link rel="stylesheet" href="/homepage-components/galerie.css">
     <script src="/firebase.js" type="module" defer></script>
   </head>
   <body>
@@ -47,6 +52,12 @@
       <p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
     </footer>
 
-    <script src="/homepage.js" type="module"></script>
+    <script src="/homepageServices/auth.js" type="module"></script>
+    <script src="/homepageServices/firebase-db.js" type="module"></script>
+    <script src="/homepageServices/firestore-db.js" type="module"></script>
+    <script src="/homepageServices/galerie.js" type="module"></script>
+    <script src="/homepageServices/logout.js" type="module"></script>
+    <script src="/homepageServices/popup-image.js" type="module"></script>
+    <script src="/homepageServices/upload.js" type="module"></script>
   </body>
 </html>

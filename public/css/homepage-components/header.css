@@ -1,0 +1,52 @@
+
+.title-container {
+  font-size: 30px;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  line-height: 50px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.signin-btn-container, .logout-btn-container {
+  display: none;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+.signin-btn, .logout-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  border: 2px solid transparent;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+.signin-btn {
+  background-color: #007BFF;
+}
+
+.logout-btn {
+  background-color: #dc3545; /* Red color to signify action */
+}
+
+.signin-btn:hover {
+  background-color: #0056b3;
+}
+
+.logout-btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+  border-color: #bd2130;
+}

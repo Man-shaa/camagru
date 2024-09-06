@@ -1,0 +1,24 @@
+.container .images-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  max-width: 100%;
+  padding: 10px;
+}
+
+/* Style for individual image containers */
+.image {
+  position: relative;
+  cursor: pointer;
+  width: 300px;
+  height: 200px;
+  overflow: hidden;
+  border: 5px solid #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.image:hover {
+  transform: scale(1.05); /* Zoom effect */
+}
+

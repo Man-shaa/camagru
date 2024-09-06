@@ -1,0 +1,55 @@
+
+.image-title {
+  font-size: 20px;
+  color: #fff;
+  margin: 0;
+  padding: 40px;
+  word-break: break-word; /* Break long titles */
+  text-align: center;
+}
+
+.delete-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  display: none;
+  font-size: 14px;
+}
+
+.container .popup-image {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, .9);
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+}
+
+.container .popup-image span {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  font-size: 60px;
+  font-weight: bolder;
+  color: #fff;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.container .popup-image img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 5px solid #4f446e;
+  border-radius: 5px;
+  max-width: 70%;
+  max-height: 50%;
+  object-fit: cover;
+}
