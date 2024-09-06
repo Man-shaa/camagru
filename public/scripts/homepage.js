@@ -1,6 +1,6 @@
 import { onAuthStateChanged, getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, getDoc, getDocs, addDoc, collection, orderBy, query, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
+import { getFirestore, getDoc, getDocs, addDoc, collection, orderBy, query, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 
 // global variables
 const auth = getAuth();
@@ -105,7 +105,7 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 			getDownloadURL(snapshot.ref)
 			.then((url) => {
 				addDoc(collection(db, 'images'), {
-					UniqueImageName: uniqueFileName,
+					uniqueImageName: uniqueFileName,
 					imageUrl: url,
 					fileName: file.name,
 					userId: currentUser.uid,
@@ -182,7 +182,8 @@ document.querySelector('.images-container').addEventListener('click', (event) =>
 				if (currentUser && currentUser.uid === userId) {
 					deleteBtn.style.display = 'block';
 					deleteBtn.onclick = () => {
-						deleteImage(image); // Call the delete function
+						deleteFirestoreImage(imagePopupRef);
+						deleteFirebaseImage(docSnap.data().uniqueImageName);
 					};
 				}
 			}
@@ -192,6 +193,38 @@ document.querySelector('.images-container').addEventListener('click', (event) =>
 		})
 	}
 });
+
+// delete an image from Firestore using the image reference
+function deleteFirestoreImage(imageRef) {
+	if (!imageRef) {
+		console.log("Image reference not found");
+		return;
+	}
+	deleteDoc(imageRef)
+	.then(() => {
+		console.log("Document successfully deleted!");
+		window.location.reload();
+	})
+	.catch((error) => {
+		console.error("Error removing document: ", error);
+	});
+}
+
+// delete an image from Firebase Storage using the image unique name
+function deleteFirebaseImage(uniqueImageName) {
+	const imageRef = ref(storage, 'images/' + uniqueImageName);
+	if (!imageRef) {
+		console.log("Image reference not found");
+		return;
+	}
+	deleteObject(imageRef)
+	.then(() => {
+		console.log("Image successfully deleted!");
+	})
+	.catch((error) => {
+		console.error("Error removing image: ", error);
+	});
+}
 
 // Close popup image listener using event delegation
 document.querySelector('.popup-image span').onclick = () => {
