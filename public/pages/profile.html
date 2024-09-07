@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Profile</title>
 	<script src="/firebase.js" type="module" defer></script>
+  <script src="/homepageServices/auth.js" type="module"></script>
   <link rel="stylesheet" href="/profile/profile.css">
 </head>
 <body>
@@ -19,14 +20,14 @@
 			<!-- Username Section -->
 			<div class="profile-section">
 				<label for="username">Username:</label>
-				<input type="text" id="username" value="JohnDoe" disabled>
+				<input type="text" id="username" value="" disabled>
 				<button data-field-id="username" class="edit-btn">Edit</button>
 			</div>
 
 			<!-- Email Section -->
 			<div class="profile-section">
 				<label for="email">Email:</label>
-				<input type="email" id="email" value="john.doe@example.com" disabled>
+				<input type="email" id="email" value="" disabled>
 				<button data-field-id="email" class="edit-btn">Edit</button>
 			</div>
 
@@ -46,7 +47,6 @@
 		<p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
 	</footer>
 	
-  <script src="/homepageServices/auth.js" type="module"></script>
   <script src="/profile/profile.js" type="module"></script>
 </body>
 </html>

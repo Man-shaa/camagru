@@ -15,25 +15,67 @@ function showMessage(message, divId)
   if (message !== "User created successfully")
   {
     setTimeout(() => {
-      messageDiv.style.display = "none"; // Hide the message after fade-out
-    }, 3000); // Delay for 6 seconds (1 second after the opacity transition)
+      messageDiv.style.display = "none";
+    }, 3000);
   }
 }
 
+function validateForm() {
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!username) {
+    showMessage("Username cannot be empty", "signupMessage");
+    return false;
+  }
+  
+  if (!email) {
+    showMessage("Email cannot be empty", "signupMessage");
+    return false;
+  }
+
+  // Validate email format using a regular expression
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showMessage("Invalid email format!", "signupMessage");
+    return false;
+  }
+
+  if (!password) {
+    showMessage("Password cannot be empty", "signupMessage");
+    return false;
+  }
+
+  if (password.length < 6) {
+    showMessage("Password must be at least 6 characters long", "signupMessage");
+    return false;
+  }
+
+  return true; // Validation passed
+}
+
 const signupForm = document.getElementById("submitSignup");
+
 signupForm.addEventListener("click", (e) => {
   e.preventDefault();
 
+  if (!validateForm())
+    return ;
+  
   const auth = getAuth();
   const db = getFirestore();
 
+	const username = document.getElementById('username').value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
+  console.log("Username: ", username);
   createUserWithEmailAndPassword(auth, email, password)
     .then((cred) => {
       console.log("User created : ", cred.user);
       const userData = {
+        username: username,
         email: email,
         uid: cred.user.uid,
       };
@@ -51,16 +93,23 @@ signupForm.addEventListener("click", (e) => {
     })
     .catch((error) => {
       const errorCode = error.code;
-      if (errorCode === "auth/email-already-in-use") {
-        showMessage("Email already Exists !", "signupMessage");
-      }
-      else
-      {
-        showMessage("Error creating user !", "signupMessage");
-      }
-      console.log(error.message);
+      handleFirebaseError(errorCode, "signupMessage");
     });
 });
+
+function handleFirebaseError(errorCode, divId) {
+  switch (errorCode) {
+    case "auth/invalid-email":
+      showMessage("Invalid email address!", "signupMessage");
+      break;
+    case "auth/email-already-in-use":
+      showMessage("Email already exists!", "signupMessage");
+      break;
+    default:
+      showMessage("Error creating user! Please try again.", "signupMessage");
+      break;
+  }
+}
 
 const togglePassword = document.getElementById('togglePassword');
 

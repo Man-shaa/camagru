@@ -9,7 +9,9 @@ let currentUser = null;
 export function initializeAuthListener(callback) {
   onAuthStateChanged(auth, (user) => {
     currentUser = user;
-    callback(user);
+    if (callback) {
+      callback(user);
+    }
   });
 }
 
@@ -49,7 +51,6 @@ function updateUI(user) {
 
 // Initialize auth listener
 onAuthStateChanged(auth, (user) => {
-	console.log("user status: ", user);
   updateUI(user);
 	updateCurrentUser(user);
 });

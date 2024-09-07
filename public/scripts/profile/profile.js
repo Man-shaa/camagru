@@ -1,26 +1,30 @@
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getAuth, updateEmail, updatePassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+
 import { initializeAuthListener, getCurrentUser } from "../homepageServices/auth.js";
 
-function initProfilePage() {
-  const user = getCurrentUser();
+const db = getFirestore();
 
-  console.log("user :", user);
-  if (!user) {
-    // Redirect to login page or show an error message
-    window.location.href = '/signin';
-    return;
-  }
+const usernameField = document.getElementById("username");
+const emailField = document.getElementById("email");
 
-  // Fetch and display user profile information
-  console.log('Current user:', user);
-}
-
-// Initialize authentication listener and ensure profile page setup happens after user state is known
 initializeAuthListener((user) => {
-  if (user) {
-    initProfilePage();
-  } else {
-    window.location.href = '/signin'; // Redirect if no user is found
+  console.log('Logged user:', user);
+
+  // Redirect if the user is not logged
+  if (!user) {
+    window.location.href = '/signin';
   }
+
+  // Set fields value to current user data
+  const userRef = doc(db, "users", user.uid);
+  getDoc(userRef)
+    .then((docSnap) => {
+      if (docSnap.exists()) {
+        usernameField.value = docSnap.data().username;
+        emailField.value = docSnap.data().email;
+      }
+    });
 });
 
 function editField(fieldId) {
@@ -29,24 +33,51 @@ function editField(fieldId) {
   field.focus();
 }
 
+// updates user data in Firestore and Firebase Auth
 function saveChanges() {
-  // Code to save changes to Firebase or other backend logic
-  console.log('Changes saved successfully!');
+  const user = getCurrentUser();
+
+  const userRef = doc(db, "users", user.uid);
+  getDoc(userRef)
+  .then((docSnap) => {
+    if (docSnap.exists()) {
+
+      const updatedFields = {};
+      if (docSnap.data().username !== usernameField.value)
+        updatedFields.username = usernameField.value;
+      if (docSnap.data().email !== emailField.value)
+        updatedFields.email = emailField.value;
+      
+      console.log("updatedFields : ",updatedFields);
+      updateDoc(userRef, updatedFields)
+      .then(() => {
+        console.log('User data updated successfully!');
+      })
+      .catch((error) => {
+        console.error('Error updating user data:', error);
+      });
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Edit buttons click listener
   const editButtons = document.querySelectorAll(".edit-btn");
-
   editButtons.forEach((button) => {
     button.addEventListener("click", function () {
       const fieldId = this.getAttribute("data-field-id");
-      console.log(`Editing field with ID: ${fieldId}`);
       editField(fieldId);
     });
   });
 
+  // submit button click listener
   const saveButton = document.getElementById("save-btn");
   saveButton.addEventListener("click", () => {
     saveChanges();
+    const inputFields = document.querySelectorAll("input");
+
+    inputFields.forEach((field) => {
+      field.disabled = true;
+    });
   });
 });

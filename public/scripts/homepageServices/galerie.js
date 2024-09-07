@@ -1,4 +1,4 @@
-import { getFirestore, getDoc, getDocs, collection, orderBy, query, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, getDocs, collection, orderBy, query } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
 // global variables
 const db = getFirestore();
