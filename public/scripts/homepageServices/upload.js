@@ -1,7 +1,7 @@
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 
-import { currentUser } from "./auth.js";
+import { getCurrentUser } from "./auth.js";
 import { createImageElement } from "./galerie.js";
 
 // global variables
@@ -10,6 +10,8 @@ const storage = getStorage();
 
 // Upload and add a new image to Firestore when clicking on upload button
 document.getElementById('fileInput').addEventListener('change', function(event) {
+	const currentUser = getCurrentUser();
+
 	if (!currentUser) {
 		console.log("user must be logged to upload an image");
 		return;

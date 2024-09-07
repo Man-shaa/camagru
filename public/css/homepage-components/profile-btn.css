@@ -1,0 +1,21 @@
+.profile-btn-container {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.profile-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.profile-btn:hover {
+  background-color: #2980b9;
+}

@@ -4,16 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camagru - Homepage</title>
-    <link rel="stylesheet" href="/homepage-components/homepage.css">
-    <link rel="stylesheet" href="/homepage-components/header.css">
-    <link rel="stylesheet" href="/homepage-components/upload.css">
-    <link rel="stylesheet" href="/homepage-components/popup-image.css">
-    <link rel="stylesheet" href="/homepage-components/pagination.css">
     <link rel="stylesheet" href="/homepage-components/galerie.css">
+    <link rel="stylesheet" href="/homepage-components/header.css">
+    <link rel="stylesheet" href="/homepage-components/homepage.css">
+    <link rel="stylesheet" href="/homepage-components/pagination.css">
+    <link rel="stylesheet" href="/homepage-components/popup-image.css">
+    <link rel="stylesheet" href="/homepage-components/profile-btn.css">
+    <link rel="stylesheet" href="/homepage-components/upload.css">
     <script src="/firebase.js" type="module" defer></script>
   </head>
   <body>
     <header>
+      <div class="profile-btn-container">
+        <a href="/profile" class="profile-btn">Profile</a>
+      </div>
       <h1 class="title-container">Camagru</h1>
       <div id="signin-btn-container" class="signin-btn-container" style="display: none;">
         <a href="/signin" class="signin-btn">Login</a>

@@ -1,29 +1,55 @@
 import { onAuthStateChanged, getAuth } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
-// global variables
+// Global variables
 const auth = getAuth();
 
-export let currentUser = null;
+let currentUser = null;
+
+// Function to initialize auth listener
+export function initializeAuthListener(callback) {
+  onAuthStateChanged(auth, (user) => {
+    currentUser = user;
+    callback(user);
+  });
+}
+
+// Function to get the current user
+export function getCurrentUser() {
+  return currentUser;
+}
 
 // Function to update the variable
-// USELESS ???????????????//
 export function updateCurrentUser(user) {
   currentUser = user;
 }
 
-// User auth change listener
+const elements = {
+  signinBtnContainer: document.getElementById('signin-btn-container'),
+  logoutBtnContainer: document.getElementById('logout-btn-container'),
+  uploadBtnContainer: document.getElementById('upload-container')
+};
+
+function updateUI(user) {
+  if (user) {
+    if (elements.signinBtnContainer)
+			elements.signinBtnContainer.style.display = 'none';
+    if (elements.logoutBtnContainer)
+			elements.logoutBtnContainer.style.display = 'block';
+    if (elements.uploadBtnContainer)
+			elements.uploadBtnContainer.style.display = 'flex';
+  } else {
+    if (elements.signinBtnContainer)
+			elements.signinBtnContainer.style.display = 'block';
+    if (elements.logoutBtnContainer)
+			elements.logoutBtnContainer.style.display = 'none';
+    if (elements.uploadBtnContainer)
+			elements.uploadBtnContainer.style.display = 'none';
+  }
+}
+
+// Initialize auth listener
 onAuthStateChanged(auth, (user) => {
 	console.log("user status: ", user);
-	const signinBtnContainer = document.getElementById('signin-btn-container');
-	const logoutBtnContainer = document.getElementById('logout-btn-container');
-	const uploadBtnContainer = document.getElementById('upload-container');
-
-	if (user) {
-		updateCurrentUser(user);
-		logoutBtnContainer.style.display = 'block';
-		uploadBtnContainer.style.display = 'flex';
-		currentUser = user;
-	} else {
-		signinBtnContainer.style.display = 'block';
-	}
+  updateUI(user);
+	updateCurrentUser(user);
 });
