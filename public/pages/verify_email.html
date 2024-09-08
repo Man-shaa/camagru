@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Verify Your Email</title>
+		<link rel="stylesheet" href="verify_email.css">
+		<script src="/firebase.js" type="module"></script>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Verify Your Email</h1>
+			<p>We have sent a verification link to your email. Please check your inbox and click on the link to verify your email address.</p>
+			<p>Once you have verified your email, <a href="#" id="checkVerificationLink">click here</a> to continue.</p>
+		<form id="checkVerificationForm">
+			<input type="hidden" name="verificationCheck" value="true">
+		</form>
+	</div>
+	<script src="/verify_email.js" type="module"></script>
+	</body>
+</html>

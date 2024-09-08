@@ -1,8 +1,9 @@
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getAuth, updateEmail, updatePassword } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
 import { initializeAuthListener, getCurrentUser } from "../homepageServices/auth.js";
 
+const auth = getAuth();
 const db = getFirestore();
 
 const usernameField = document.getElementById("username");
@@ -37,6 +38,10 @@ function editField(fieldId) {
 function saveChanges() {
   const user = getCurrentUser();
 
+  if (!user) {
+    console.error('No user is logged in!');
+  }
+
   const userRef = doc(db, "users", user.uid);
   getDoc(userRef)
   .then((docSnap) => {
@@ -48,14 +53,29 @@ function saveChanges() {
       if (docSnap.data().email !== emailField.value)
         updatedFields.email = emailField.value;
       
-      console.log("updatedFields : ",updatedFields);
+      if (updatedFields.email)
+      {
+        console.log("updating email in firebase Auth", updatedFields.email, "for user", user);
+        updateEmail(user, updatedFields.email)
+        .then(() => {
+          // verify email here ?
+          
+          console.log('User email updated successfully in firebase Auth!');
+        })
+        .catch((error) => {
+          console.error('Error updating user email in firebase Auth : ', error);
+        });
+      }
       updateDoc(userRef, updatedFields)
       .then(() => {
-        console.log('User data updated successfully!');
+        console.log('User data updated successfully in firestore db!');
       })
       .catch((error) => {
-        console.error('Error updating user data:', error);
+        console.error('Error updating user data in firestore db : ', error);
       });
+    }
+    else {
+      console.error('User data not found in firestore db!');
     }
   });
 }

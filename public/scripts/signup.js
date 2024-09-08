@@ -1,9 +1,7 @@
-import { createUserWithEmailAndPassword, getAuth } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, getAuth } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
-
-function showMessage(message, divId)
-{
+function showMessage(message, divId) {
   const messageDiv = document.getElementById(divId);
   messageDiv.innerHTML = message;
   messageDiv.style.display = 'block';
@@ -12,8 +10,7 @@ function showMessage(message, divId)
     messageDiv.style.opacity = 0;
   }, 2000);
   
-  if (message !== "User created successfully")
-  {
+  if (message !== "User created successfully") {
     setTimeout(() => {
       messageDiv.style.display = "none";
     }, 3000);
@@ -35,7 +32,6 @@ function validateForm() {
     return false;
   }
 
-  // Validate email format using a regular expression
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     showMessage("Invalid email format!", "signupMessage");
@@ -61,35 +57,42 @@ signupForm.addEventListener("click", (e) => {
   e.preventDefault();
 
   if (!validateForm())
-    return ;
+    return;
   
   const auth = getAuth();
-  const db = getFirestore();
 
-	const username = document.getElementById('username').value;
+  const username = document.getElementById('username').value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  console.log("Username: ", username);
+  console.log(auth, username, email, password);
+  
   createUserWithEmailAndPassword(auth, email, password)
     .then((cred) => {
-      console.log("User created : ", cred.user);
-      const userData = {
-        username: username,
-        email: email,
-        uid: cred.user.uid,
-      };
-      showMessage("User created successfully", "signupMessage")
-      const docRef = doc(db, "users", userData.uid);
-      setDoc(docRef, userData)
-      .then(() => {
-        setTimeout(() => {
-          window.location.href = "/signin";
-        }, 2000);
-      })
-      .catch((error) => {
-        console.log("error writting document: ", error);
-      });
+      console.log("before updateProfile", cred.user);
+      
+      updateProfile(cred.user, { displayName: username })
+        .then(() => {
+          console.log("after updateProfile");
+      const currentUser = auth.currentUser;
+      console.log("Current user:", auth.currentUser);
+
+      if (currentUser) {
+        sendEmailVerification(currentUser)
+          .then(() => {
+            console.log("Email verification sent!");
+            window.location.href = "/verify_email";
+          })
+          .catch((error) => {
+            console.error("Error sending email verification: ", error);
+          });
+      } else {
+        console.error("User is not properly authenticated.");
+      }
+        })
+        .catch((error) => {
+          console.log("Error updating profile: ", error);
+        });
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -112,13 +115,11 @@ function handleFirebaseError(errorCode, divId) {
 }
 
 const togglePassword = document.getElementById('togglePassword');
+const password = document.getElementById('password');
 
 togglePassword.addEventListener('click', () => {
-  // Toggle the type attribute using getAttribute() and setAttribute()
   const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
   password.setAttribute('type', type);
-  
-  // Toggle the eye / eye slash icon
   togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
 });
 
