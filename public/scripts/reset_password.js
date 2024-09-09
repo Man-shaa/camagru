@@ -1,6 +1,6 @@
-import { sendPasswordResetEmail, getAuth } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { sendPasswordResetEmail, getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
-import { initializeAuthListener, getCurrentUser } from "../homepageServices/auth.js";
+import { initializeAuthListener, updateCurrentUser } from "./auth.js";
 
 function showMessage(message, divId) {
   const messageDiv = document.getElementById(divId);
@@ -45,13 +45,22 @@ document.addEventListener('DOMContentLoaded', function() {
 		// send password reset email
 		sendPasswordResetEmail(auth, email)
 		.then(() => {
-			showMessage("Password reset email sent!", "messageDiv");
+			showMessage("Password reset email sent, redirection to signin page", "messageDiv");
+			signOut(auth)
+			.then(() => {
+				updateCurrentUser(null);
+				setTimeout(() => {
+					window.location.href = '/signin';
+				}, 4000);
+			})
+			.catch((error) => {
+				console.log('Error signing out:', error);
+			});
 		})
 		.catch((error) => {
 			const errorCode = error.code;
 			const errorMessage = error.message;
-			alert(errorMessage);
-			// ..
+			console.log(errorCode, ": error sending password reset email", errorMessage);
 		});
 		
 	});

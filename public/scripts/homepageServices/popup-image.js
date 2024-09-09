@@ -1,6 +1,6 @@
 import { getFirestore, getDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
-import { getCurrentUser } from "./auth.js";
+import { getCurrentUser } from "../auth.js";
 import { deleteFirebaseImage } from "./firebase-db.js";
 import { deleteFirestoreImage } from "./firestore-db.js";
 
