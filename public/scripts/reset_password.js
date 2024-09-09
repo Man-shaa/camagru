@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	});
 
-
 	// back to previous page
 	const backButton = document.getElementById('back-btn');
   if (backButton) {

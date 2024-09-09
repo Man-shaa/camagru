@@ -34,62 +34,84 @@ function editField(fieldId) {
   field.focus();
 }
 
-// updates user data in Firestore and Firebase Auth
-function saveChanges() {
-  const user = getCurrentUser();
+async function promptForPassword() {
+  return new Promise((resolve, reject) => {
+    const password = prompt("Please enter your current password to proceed with updating your email:");
 
+    if (password) {
+      resolve(password);
+    } else {
+      reject("Password not provided");
+    }
+  });
+}
+
+// Function to update user email in Firebase Auth
+async function updateUserEmailAuth(user, newEmail) {
+  try {
+    const password = await promptForPassword();
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(user, credential);
+    console.log("User reauthenticated successfully.");
+    await updateEmail(user, newEmail);
+    console.log('User email updated successfully in firebase Auth!');
+  }
+  catch (error) {
+    if (error.code === "auth/wrong-password") {
+      console.error("Wrong password provided.");
+    }
+    else {
+      console.error("Error reauthenticating or updating user email:", error);
+    }
+    throw error;
+  }
+}
+
+// Function to update user data in Firestore
+async function updateUserDataFirestore(userRef, updatedFields) {
+  try {
+    await updateDoc(userRef, updatedFields);
+    console.log('User data updated successfully in Firestore db!');
+  }
+  catch (error) {
+    console.error('Error updating user data in Firestore db:', error);
+    throw error;
+  }
+}
+
+// Main function to save changes
+async function saveChanges() {
+  const user = getCurrentUser();
   if (!user) {
     console.error('No user is logged in!');
+    return;
   }
 
   const userRef = doc(db, "users", user.uid);
-  getDoc(userRef)
-  .then(async (docSnap) => {
-    if (docSnap.exists()) {
+  try {
+    const docSnap = await getDoc(userRef);
+    if (!docSnap.exists()) {
+      console.error('User data not found in Firestore db!');
+      return;
+    }
 
-      const updatedFields = {};
-      if (docSnap.data().username !== usernameField.value)
-        updatedFields.username = usernameField.value;
-      if (docSnap.data().email !== emailField.value)
-        updatedFields.email = emailField.value;
-      
-      if (updatedFields.email)
-      {
-        console.log("updating email in firebase Auth", updatedFields.email, "for user", user);
-        // const userEmail = user.email;
-        // const paswordCredential = prompt('Please enter your password to update your email');
-        
-        const credential = EmailAuthProvider.credential(user.email, 'test12');
-        reauthenticateWithCredential(user, credential)
-        .then(() => {
-          console.log("User reauthenticated successfully.");
-          // Proceed with your logic here
-          updateEmail(user, updatedFields.email)
-          .then(() => {
-            // relog user to update email in user object
-          
-            console.log('User email updated successfully in firebase Auth!');
-          })
-          .catch((error) => {
-              console.error('Error updating user email in firebase Auth : ', error);
-            });
-          })
-        .catch((error) => {
-          console.error("Error reauthenticating user:", error);
-        });
-      }
-      updateDoc(userRef, updatedFields)
-      .then(() => {
-        console.log('User data updated successfully in firestore db!');
-      })
-      .catch((error) => {
-        console.error('Error updating user data in firestore db : ', error);
-      });
+    const docData = docSnap.data();
+    const updatedFields = {};
+    if (docData.username !== usernameField.value)
+      updatedFields.username = usernameField.value;
+    if (docData.email !== emailField.value)
+      updatedFields.email = emailField.value;
+
+    if (updatedFields.email) {
+      console.log("Updating email in Firebase Auth", updatedFields.email, "for user", user);
+      await updateUserEmailAuth(user, updatedFields.email);
     }
-    else {
-      console.error('User data not found in firestore db!');
-    }
-  });
+
+    await updateUserDataFirestore(userRef, updatedFields);
+  }
+  catch (error) {
+    console.error("Error saving changes:", error);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
