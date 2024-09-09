@@ -1,5 +1,5 @@
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getAuth, updateEmail } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
 import { initializeAuthListener, getCurrentUser } from "../homepageServices/auth.js";
 
@@ -44,7 +44,7 @@ function saveChanges() {
 
   const userRef = doc(db, "users", user.uid);
   getDoc(userRef)
-  .then((docSnap) => {
+  .then(async (docSnap) => {
     if (docSnap.exists()) {
 
       const updatedFields = {};
@@ -56,14 +56,26 @@ function saveChanges() {
       if (updatedFields.email)
       {
         console.log("updating email in firebase Auth", updatedFields.email, "for user", user);
-        updateEmail(user, updatedFields.email)
+        // const userEmail = user.email;
+        // const paswordCredential = prompt('Please enter your password to update your email');
+        
+        const credential = EmailAuthProvider.credential(user.email, 'test12');
+        reauthenticateWithCredential(user, credential)
         .then(() => {
-          // verify email here ?
+          console.log("User reauthenticated successfully.");
+          // Proceed with your logic here
+          updateEmail(user, updatedFields.email)
+          .then(() => {
+            // relog user to update email in user object
           
-          console.log('User email updated successfully in firebase Auth!');
-        })
+            console.log('User email updated successfully in firebase Auth!');
+          })
+          .catch((error) => {
+              console.error('Error updating user email in firebase Auth : ', error);
+            });
+          })
         .catch((error) => {
-          console.error('Error updating user email in firebase Auth : ', error);
+          console.error("Error reauthenticating user:", error);
         });
       }
       updateDoc(userRef, updatedFields)
