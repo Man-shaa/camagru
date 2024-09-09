@@ -38,30 +38,30 @@ document.addEventListener('DOMContentLoaded', function() {
 	submitButton.addEventListener('click', function() {
 		const auth = getAuth();
 		const email = emailField.value;
-		if (!validateEmail(email))
-			return;
-
-		// send password reset email
+		
+		if (!validateEmail(email)) return;
+	
+		// Send password reset email
 		sendPasswordResetEmail(auth, email)
-		.then(() => {
-			showMessage("Password reset email sent, redirection to signin page", "messageDiv");
-			signOut(auth)
 			.then(() => {
-				updateCurrentUser(null);
+				showMessage("Password reset email sent, redirection to signin page", "messageDiv");
+	
 				setTimeout(() => {
-					window.location.href = '/signin';
-				}, 4000);
+					signOut(auth)
+						.then(() => {
+							updateCurrentUser(null);
+							window.location.href = '/signin';
+						})
+						.catch((error) => {
+							console.log('Error signing out:', error);
+						});
+				}, 3000);
 			})
 			.catch((error) => {
-				console.log('Error signing out:', error);
+				const errorCode = error.code;
+				const errorMessage = error.message;
+				console.log(errorCode, ": error sending password reset email", errorMessage);
 			});
-		})
-		.catch((error) => {
-			const errorCode = error.code;
-			const errorMessage = error.message;
-			console.log(errorCode, ": error sending password reset email", errorMessage);
-		});
-		
 	});
 });
 

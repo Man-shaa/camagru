@@ -9,6 +9,16 @@ const db = getFirestore();
 const usernameField = document.getElementById("username");
 const emailField = document.getElementById("email");
 
+function showMessage(message, divId) {
+  const messageDiv = document.getElementById(divId);
+  messageDiv.innerHTML = message;
+  messageDiv.style.display = 'block';
+  messageDiv.style.opacity = 1;
+	setTimeout(() => {
+		messageDiv.style.display = "none";
+	}, 3000);
+}
+
 initializeAuthListener((user) => {
   console.log('Logged user:', user);
 
@@ -57,12 +67,9 @@ async function updateUserEmailAuth(user, newEmail) {
     console.log('User email updated successfully in firebase Auth!');
   }
   catch (error) {
-    if (error.code === "auth/wrong-password") {
-      console.error("Wrong password provided.");
-    }
-    else {
-      console.error("Error reauthenticating or updating user email:", error);
-    }
+    if (error.code === "auth/wrong-password")
+      error = "Wrong password provided";
+    showMessage(error, "messageDiv");
     throw error;
   }
 }
@@ -107,7 +114,8 @@ async function saveChanges() {
       await updateUserEmailAuth(user, updatedFields.email);
     }
 
-    await updateUserDataFirestore(userRef, updatedFields);
+    if (updatedFields.username || updatedFields.email)
+      await updateUserDataFirestore(userRef, updatedFields);
   }
   catch (error) {
     console.error("Error saving changes:", error);
