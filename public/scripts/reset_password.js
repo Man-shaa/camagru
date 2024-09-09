@@ -23,12 +23,21 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	});
 
+
+	// back to previous page
+	const backButton = document.getElementById('back-btn');
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      window.history.back();
+    });
+  }
+	
+	// submit button
 	const emailField = document.getElementById('email');
 	const submitButton = document.getElementById('submit-btn');
 
-	const auth = getAuth();
-
 	submitButton.addEventListener('click', function() {
+		const auth = getAuth();
 		const email = emailField.value;
 		if (!validateEmail(email))
 			return;
@@ -37,8 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		sendPasswordResetEmail(auth, email)
 		.then(() => {
 			showMessage("Password reset email sent!", "messageDiv");
-			// Password reset email sent!
-			// ..
 		})
 		.catch((error) => {
 			const errorCode = error.code;
