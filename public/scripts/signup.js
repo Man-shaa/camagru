@@ -1,5 +1,4 @@
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, getAuth } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
 function showMessage(message, divId) {
   const messageDiv = document.getElementById(divId);
