@@ -78,13 +78,13 @@ signupForm.addEventListener("click", (e) => {
 
       if (currentUser) {
         sendEmailVerification(currentUser)
-          .then(() => {
-            console.log("Email verification sent!");
-            window.location.href = "/verify_email";
-          })
-          .catch((error) => {
-            console.error("Error sending email verification: ", error);
-          });
+        .then(() => {
+          console.log("Email verification sent!");
+          window.location.href = "/verify_email";
+        })
+        .catch((error) => {
+          console.error("Error sending email verification: ", error);
+        });
       } else {
         console.error("User is not properly authenticated.");
       }

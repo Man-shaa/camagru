@@ -1,5 +1,5 @@
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
 import { initializeAuthListener, getCurrentUser } from "../auth.js";
 
@@ -92,7 +92,7 @@ async function saveChanges() {
   if (!user) {
     console.error('No user is logged in!');
     return;
-  }
+  } 
 
   const userRef = doc(db, "users", user.uid);
   try {
@@ -109,13 +109,27 @@ async function saveChanges() {
     if (docData.email !== emailField.value)
       updatedFields.email = emailField.value;
 
+    if (updatedFields.username || updatedFields.email)
+      await updateUserDataFirestore(userRef, updatedFields);
+
     if (updatedFields.email) {
       console.log("Updating email in Firebase Auth", updatedFields.email, "for user", user);
       await updateUserEmailAuth(user, updatedFields.email);
+      
+      // redirect to verify email page
+      sendEmailVerification(user)
+      .then(() => {
+        showMessage("Please verify your new email", "messageDiv");
+        setTimeout(() => {
+          console.log("Email verification sent!");
+          window.location.href = "/verify_email";
+        }, 3000);
+      })
+      .catch((error) => {
+        console.error("Error sending email verification: ", error);
+      });
     }
 
-    if (updatedFields.username || updatedFields.email)
-      await updateUserDataFirestore(userRef, updatedFields);
   }
   catch (error) {
     console.error("Error saving changes:", error);
