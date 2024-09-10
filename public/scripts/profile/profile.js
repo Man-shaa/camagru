@@ -1,5 +1,5 @@
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, deleteUser} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
 import { initializeAuthListener, getCurrentUser } from "../auth.js";
 
@@ -14,9 +14,9 @@ function showMessage(message, divId) {
   messageDiv.innerHTML = message;
   messageDiv.style.display = 'block';
   messageDiv.style.opacity = 1;
-	setTimeout(() => {
-		messageDiv.style.display = "none";
-	}, 3000);
+  setTimeout(() => {
+    messageDiv.style.display = "none";
+  }, 3000);
 }
 
 initializeAuthListener((user) => {
@@ -59,9 +59,7 @@ async function promptForPassword() {
 // Function to update user email in Firebase Auth
 async function updateUserEmailAuth(user, newEmail) {
   try {
-    const password = await promptForPassword();
-    const credential = EmailAuthProvider.credential(user.email, password);
-    await reauthenticateWithCredential(user, credential);
+    await reauthenticateUser(user);
     console.log("User reauthenticated successfully.");
     await updateEmail(user, newEmail);
     console.log('User email updated successfully in firebase Auth!');
@@ -135,6 +133,65 @@ async function saveChanges() {
   }
 }
 
+// reuthenticate user with prompt for password
+async function reauthenticateUser(user) {
+  try {
+    const password = await promptForPassword();
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(user, credential);
+    console.log("User reauthenticated successfully.");
+  }
+  catch (error) {
+    console.error("Error reauthenticating user:", error);
+    throw error; // Re-throw to be handled in the caller function
+  }
+}
+
+async function deleteUserFirestore(user) {
+  try {
+    const userRef = doc(db, "users", user.uid);
+    await deleteDoc(userRef)
+    console.log("User account deleted successfully from Firestore !");
+  }
+  catch (error) {
+    console.error("Error deleting user data in Firestore :", error);
+    throw error;
+  }
+}
+
+async function deleteUserAuth(user) {
+  try {
+    await deleteUser(user)
+    console.log("User account deleted successfully from Firebase Auth !");
+  }
+  catch (error) {
+    console.error("Error deleting user account:", error);
+    throw error;
+  }
+}
+
+// Delete an account on Firebase Auth and Firestore
+async function deleteAccount(user) {
+  try {
+    // Reauthenticate user first
+    await reauthenticateUser(user);
+
+    // Delete user data from Firestore
+    await deleteUserFirestore(user);
+
+    // Delete the user from Firebase Authentication
+    await deleteUserAuth(user);
+
+    window.location.href = "/signin";
+  }
+  catch (error) {
+    console.error("Error deleting user:", error);
+    if (error.code === "auth/wrong-password")
+      error = "Wrong password provided";
+    showMessage(error, "messageDiv");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // Edit buttons click listener
   const editButtons = document.querySelectorAll(".edit-btn");
@@ -154,5 +211,24 @@ document.addEventListener("DOMContentLoaded", () => {
     inputFields.forEach((field) => {
       field.disabled = true;
     });
+  });
+
+  // Delete account button click listener
+  const deleteButton = document.getElementById("delete-account-btn");
+  deleteButton.addEventListener("click", () => {
+    const user = getCurrentUser();
+    if (!user) {
+      console.error('No user is logged in!');
+      return;
+    }
+
+    if (confirm("Are you sure you want to delete your account?")) {
+      try {
+        deleteAccount(user)
+        console.log("Account deleted successfully!");
+      }
+      catch (error) {
+      }
+    }
   });
 });
