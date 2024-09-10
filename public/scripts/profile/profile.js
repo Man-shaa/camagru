@@ -113,9 +113,8 @@ async function saveChanges() {
       await updateUserDataFirestore(userRef, updatedFields);
 
     if (updatedFields.email) {
-      console.log("Updating email in Firebase Auth", updatedFields.email, "for user", user);
       await updateUserEmailAuth(user, updatedFields.email);
-      
+
       // redirect to verify email page
       sendEmailVerification(user)
       .then(() => {

@@ -148,6 +148,18 @@ input:focus {
   outline: none;
 }
 
+.edit-btn {
+  padding: 6px 12px;
+  margin-left: 10px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+}
+
 .reset-link {
   color: #3498db;
   text-decoration: none;
@@ -162,24 +174,27 @@ input:focus {
   text-decoration: underline;
 }
 
-.edit-btn {
-  padding: 6px 12px;
-  margin-left: 10px;
-  background-color: #3498db;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 12px;
-  transition: background-color 0.3s ease;
-}
-
 .edit-btn:hover {
   background-color: #2980b9;
 }
 
+.delete-account-btn {
+  margin-left: 10px;
+  padding: 6px 15px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-account-btn:hover {
+  background-color: #c0392b;
+}
+
 .save-btn {
-  margin-top: 20px;
   padding: 10px 20px;
   background-color: #2ecc71;
   color: white;
