@@ -9,14 +9,14 @@ const db = getFirestore();
 const usernameField = document.getElementById("username");
 const emailField = document.getElementById("email");
 
-function showMessage(message, divId) {
+function showMessage(message, divId, duration) {
   const messageDiv = document.getElementById(divId);
   messageDiv.innerHTML = message;
   messageDiv.style.display = 'block';
   messageDiv.style.opacity = 1;
   setTimeout(() => {
     messageDiv.style.display = "none";
-  }, 3000);
+  }, duration || 3000);
 }
 
 initializeAuthListener((user) => {
@@ -48,21 +48,24 @@ logoutButton.addEventListener('click', () => {
 		const logoutBtnContainer = document.getElementById('logout-btn-container');
 		const signinBtnContainer = document.getElementById('signin-btn-container');
 
-		if (logoutBtnContainer) logoutBtnContainer.style.display = 'none';
-		if (signinBtnContainer) signinBtnContainer.style.display = 'block';
-		window.location.reload();
+		if (logoutBtnContainer)
+      logoutBtnContainer.style.display = 'none';
+		if (signinBtnContainer)
+      signinBtnContainer.style.display = 'block';
 	})
 	.catch((error) => {
 		console.log('Error signing out:', error);
 	});
 });
 
+// Enable field for editing
 function editField(fieldId) {
   const field = document.getElementById(fieldId);
   field.disabled = false;
   field.focus();
 }
 
+// Display a prompt for password
 async function promptForPassword() {
   return new Promise((resolve, reject) => {
     const password = prompt("Please enter your current password to proceed with updating your email:");
@@ -161,11 +164,11 @@ async function reauthenticateUser(user) {
     console.log("User reauthenticated successfully.");
   }
   catch (error) {
-    console.error("Error reauthenticating user:", error);
     throw error; // Re-throw to be handled in the caller function
   }
 }
 
+// Delete user data from Firestore
 async function deleteUserFirestore(user) {
   try {
     const userRef = doc(db, "users", user.uid);
@@ -178,6 +181,7 @@ async function deleteUserFirestore(user) {
   }
 }
 
+// Delete user account from Firebase Auth
 async function deleteUserAuth(user) {
   try {
     await deleteUser(user)
@@ -192,22 +196,20 @@ async function deleteUserAuth(user) {
 // Delete an account on Firebase Auth and Firestore
 async function deleteAccount(user) {
   try {
-    // Reauthenticate user first
     await reauthenticateUser(user);
 
-    // Delete user data from Firestore
     await deleteUserFirestore(user);
 
-    // Delete the user from Firebase Authentication
     await deleteUserAuth(user);
 
     window.location.href = "/signin";
   }
   catch (error) {
-    console.error("Error deleting user:", error);
     if (error.code === "auth/wrong-password")
       error = "Wrong password provided";
-    showMessage(error, "messageDiv");
+    else if (error.code === "auth/too-many-requests")
+      error = "Too many attempts. You can immediately restore it by resetting your password or you can try again later.";
+    showMessage(error, "messageDiv", 7000);
   }
 }
 
@@ -244,7 +246,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (confirm("Are you sure you want to delete your account?")) {
       try {
         deleteAccount(user)
-        console.log("Account deleted successfully!");
       }
       catch (error) {
       }

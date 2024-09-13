@@ -14,9 +14,10 @@ logoutButton.addEventListener('click', () => {
 		const logoutBtnContainer = document.getElementById('logout-btn-container');
 		const signinBtnContainer = document.getElementById('signin-btn-container');
 
-		if (logoutBtnContainer) logoutBtnContainer.style.display = 'none';
-		if (signinBtnContainer) signinBtnContainer.style.display = 'block';
-		window.location.reload();
+		if (logoutBtnContainer)
+			logoutBtnContainer.style.display = 'none';
+		if (signinBtnContainer)
+			signinBtnContainer.style.display = 'block';
 	})
 	.catch((error) => {
 		console.log('Error signing out:', error);
