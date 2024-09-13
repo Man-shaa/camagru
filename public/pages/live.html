@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile</title>
+	<script src="/firebase.js" type="module" defer></script>
+  <script src="/auth.js" type="module"></script>
+  <link rel="stylesheet" href="/live.css">
+</head>
+<body>
+	<header>
+		<h1 class="title-container">Camagru</h1>
+		<div class="homepage-container">
+      <a href="/homepage" class="homepage-btn">Homepage</a>
+    </div>
+
+		<!-- Logout Button -->
+		<div id="logout-btn-container" class="logout-btn-container" style="display: none;">
+			<a href="/signin" id="logout" class="logout-btn">Logout</a>
+		</div>
+	</header>
+
+	<main class="container">
+    <div class="video-container">
+      <video id="video" autoplay></video>
+    </div>
+		<button id="take-picture-btn">Take Picture</button>
+    <div class="stickers-container">
+      <!-- Stickers will be displayed here -->
+    </div>
+  </main>
+
+	<footer>
+		<p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
+	</footer>
+
+  <script src="/live.js" type="module"></script>
+</body>
+</html>
