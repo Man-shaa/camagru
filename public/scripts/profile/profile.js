@@ -1,7 +1,7 @@
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, deleteUser} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, deleteUser, signOut} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
-import { initializeAuthListener, getCurrentUser } from "../auth.js";
+import { initializeAuthListener, getCurrentUser, updateCurrentUser } from "../auth.js";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -36,6 +36,25 @@ initializeAuthListener((user) => {
         emailField.value = docSnap.data().email;
       }
     });
+});
+
+const logoutButton = document.getElementById('logout');
+
+// Logout button listener
+logoutButton.addEventListener('click', () => {
+	signOut(auth)
+	.then(() => {
+		updateCurrentUser(null);
+		const logoutBtnContainer = document.getElementById('logout-btn-container');
+		const signinBtnContainer = document.getElementById('signin-btn-container');
+
+		if (logoutBtnContainer) logoutBtnContainer.style.display = 'none';
+		if (signinBtnContainer) signinBtnContainer.style.display = 'block';
+		window.location.reload();
+	})
+	.catch((error) => {
+		console.log('Error signing out:', error);
+	});
 });
 
 function editField(fieldId) {

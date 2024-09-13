@@ -98,6 +98,35 @@ footer {
   transform: translateX(-50%);
 }
 
+.logout-btn-container {
+  display: none;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+.logout-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #dc3545; /* Red color to signify action */
+  border: 2px solid transparent;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+.logout-btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+  border-color: #bd2130;
+}
+
 .profile-container {
   max-width: 600px;
   margin: 50px auto;
