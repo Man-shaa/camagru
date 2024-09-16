@@ -31,6 +31,9 @@ async function setupCamera() {
   video.onloadedmetadata = () => {
     videoWidth = video.videoWidth;
     videoHeight = video.videoHeight;
+    console.log(videoWidth, videoHeight);
+    video.style.width = `${videoWidth}px`;
+    video.style.height = `${videoHeight}px`;
     video.play();
   };
 }
@@ -57,18 +60,14 @@ function displayPicture(imageDataUrl) {
 
 takePictureButton.addEventListener('click', () => {
   if (isPictureTaken) {
-    // Switch back to live video
-    setupCamera();
-    video.style.backgroundImage = '';
-    video.style.width = '100%';
-    video.style.height = 'auto';
+    setupCamera(); // Switch back to live video
+    video.style.backgroundImage = ''; // Clear background
     takePictureButton.textContent = 'Take Picture';
     isPictureTaken = false;
   }
-	else {
-    // Take a picture
+  else {
     const imageDataUrl = takePicture();
-    displayPicture(imageDataUrl);
+    displayPicture(imageDataUrl); // Display captured image
     takePictureButton.textContent = 'Back to Live';
     isPictureTaken = true;
   }
