@@ -16,11 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	
 	initializeAuthListener((user) => {
 		console.log('Logged user:', user);
-
-		// Redirect if the user is not logged
-		if (!user) {
-			window.location.href = '/signin';
-		}
 	});
 
 	// back to previous page

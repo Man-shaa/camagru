@@ -1,7 +1,9 @@
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 
 // Global variables
 const auth = getAuth();
+const storage = getStorage();
 const logoutButton = document.getElementById('logout');
 const video = document.getElementById('video');
 const takePictureButton = document.getElementById('take-picture-btn');
@@ -31,7 +33,6 @@ async function setupCamera() {
   video.onloadedmetadata = () => {
     videoWidth = video.videoWidth;
     videoHeight = video.videoHeight;
-    console.log(videoWidth, videoHeight);
     video.style.width = `${videoWidth}px`;
     video.style.height = `${videoHeight}px`;
     video.play();
@@ -61,7 +62,7 @@ function displayPicture(imageDataUrl) {
 takePictureButton.addEventListener('click', () => {
   if (isPictureTaken) {
     setupCamera(); // Switch back to live video
-    video.style.backgroundImage = ''; // Clear background
+    video.style.backgroundImage = '';
     takePictureButton.textContent = 'Take Picture';
     isPictureTaken = false;
   }
@@ -73,7 +74,33 @@ takePictureButton.addEventListener('click', () => {
   }
 });
 
+// Function to load stickers dynamically
+async function loadStickers() {
+  const stickersFolderRef = ref(storage, 'stickers/');
+
+  const stickersContainer = document.querySelector('.stickers-container');
+
+  try {
+    const stickersList = await listAll(stickersFolderRef);
+
+    for (const itemRef of stickersList.items) {
+      const url = await getDownloadURL(itemRef);
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = `Sticker: ${itemRef.name}`;
+      img.classList.add('stickers');
+      
+      stickersContainer.appendChild(img);
+    }
+  }
+  catch (error) {
+    console.error('Error loading stickers:', error);
+  }
+}
+
 // Initialize video stream when the page loads
 document.addEventListener('DOMContentLoaded', () => {
   setupCamera();
+  loadStickers();
 });
