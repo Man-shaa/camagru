@@ -7,6 +7,7 @@ const storage = getStorage();
 const logoutButton = document.getElementById('logout');
 const video = document.getElementById('video');
 const takePictureButton = document.getElementById('take-picture-btn');
+const overlay = document.getElementById('overlay');
 let isPictureTaken = false;
 let videoWidth, videoHeight;
 
@@ -35,6 +36,7 @@ async function setupCamera() {
     videoHeight = video.videoHeight;
     video.style.width = `${videoWidth}px`;
     video.style.height = `${videoHeight}px`;
+    setOverlaySize(); // Call to set overlay size after video metadata is loaded
     video.play();
   };
 }
@@ -89,6 +91,7 @@ async function loadStickers() {
       const img = document.createElement('img');
       img.src = url;
       img.alt = `Sticker: ${itemRef.name}`;
+      img.draggable="true"
       img.classList.add('stickers');
       
       stickersContainer.appendChild(img);
@@ -99,8 +102,60 @@ async function loadStickers() {
   }
 }
 
+function setOverlaySize() {
+  const overlay = document.getElementById('overlay');
+  overlay.style.width = `${video.clientWidth}px`;
+  overlay.style.height = `${video.clientHeight}px`;
+}
+
+function enableDragAndDrop() {
+  const stickers = document.querySelectorAll('.stickers');
+
+  stickers.forEach(sticker => {
+    sticker.addEventListener('dragstart', (event) => {
+      // Set the dragged sticker's URL into dataTransfer
+      event.dataTransfer.setData('text/plain', event.target.src); // Use 'text/plain' MIME type
+    });
+  });
+}
+
+video.addEventListener('dragover', (event) => {
+  event.preventDefault();
+});
+video.addEventListener('drop', (event) => {
+  event.preventDefault();
+
+  // Retrieve the sticker URL from the dragged item
+  const stickerSrc = event.dataTransfer.getData('text/plain'); // Same 'text/plain' type as set during dragstart
+
+  // Ensure you have a valid sticker source
+  if (stickerSrc) {
+    const rect = overlay.getBoundingClientRect(); // Use overlay's dimensions for positioning
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const droppedSticker = document.createElement('img');
+    droppedSticker.src = stickerSrc;
+    droppedSticker.classList.add('dropped-sticker');
+
+    droppedSticker.style.position = 'absolute';
+    droppedSticker.style.left = `${x - 25}px`; // Adjust for center positioning
+    droppedSticker.style.top = `${y - 25}px`;
+
+    // Append the dropped sticker to the overlay (not the video)
+    overlay.appendChild(droppedSticker);
+  }
+});
+
+
+// Update the size of the overlay when the window is resized
+window.addEventListener('resize', setOverlaySize);
+
 // Initialize video stream when the page loads
 document.addEventListener('DOMContentLoaded', () => {
   setupCamera();
-  loadStickers();
+  loadStickers()
+  .then(() => {
+    enableDragAndDrop();
+  });
 });
