@@ -27,8 +27,8 @@ async function setupCamera() {
   video.srcObject = stream;
   video.onloadedmetadata = () => {
     video.play();
-    syncOverlaySize(); // Ensure overlay syncs with video size
-    updateOverlayPosition(); // Call here to adjust overlay size when video loads
+    syncOverlaySize();
+    updateOverlayPosition();
   };
 }
 
@@ -52,11 +52,11 @@ function syncOverlaySize() {
     stickerElement.style.left = `${relativeX}px`;
     stickerElement.style.top = `${relativeY}px`;
 
-    // Adjust sticker size proportionally
-    const newWidth = sticker.originalWidth * videoScaleFactorX;
-    const newHeight = sticker.originalHeight * videoScaleFactorY;
-    stickerElement.style.width = `${newWidth}px`;
-    stickerElement.style.height = `${newHeight}px`;
+    // Adjust sticker size proportionally, but keep it small
+    const newWidth = 64 * videoScaleFactorX;
+    const newHeight = 64 * videoScaleFactorY;
+    stickerElement.style.width = `${Math.min(newWidth, 64)}px`;
+    stickerElement.style.height = `${Math.min(newHeight, 64)}px`;
   });
 }
 
@@ -76,7 +76,7 @@ function takePicture() {
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL('image/png');
+  return (canvas.toDataURL('image/png'));
 }
 
 function displayPicture(imageDataUrl) {
@@ -84,6 +84,8 @@ function displayPicture(imageDataUrl) {
   video.style.backgroundSize = 'cover';
   video.style.backgroundPosition = 'center';
   video.srcObject = null; // Stop video stream
+  syncOverlaySize();
+  updateOverlayPosition();
 }
 
 // Capture button event listener
@@ -93,7 +95,8 @@ takePictureButton.addEventListener('click', () => {
     video.style.backgroundImage = '';
     takePictureButton.textContent = 'Take Picture';
     isPictureTaken = false;
-  } else {
+  }
+  else {
     const imageDataUrl = takePicture();
     displayPicture(imageDataUrl);
     takePictureButton.textContent = 'Back to Live';
@@ -107,7 +110,7 @@ function enableDragAndDrop() {
 
   stickersElements.forEach(sticker => {
     sticker.addEventListener('dragstart', (event) => {
-      event.dataTransfer.setData('text/plain', event.target.src); // Drag sticker source URL
+      event.dataTransfer.setData('text/plain', event.target.src);
     });
   });
 }
@@ -118,17 +121,18 @@ video.addEventListener('drop', (event) => {
   event.preventDefault();
   const stickerSrc = event.dataTransfer.getData('text/plain');
   if (stickerSrc) {
-    const overlayRect = overlay.getBoundingClientRect(); // Use overlay for positioning
+    const overlayRect = overlay.getBoundingClientRect();
     const x = (event.clientX - overlayRect.left - 32) / overlayRect.width;
     const y = (event.clientY - overlayRect.top - 32) / overlayRect.height;
 
     const droppedSticker = document.createElement('img');
     droppedSticker.src = stickerSrc;
     droppedSticker.classList.add('dropped-sticker');
-    
-    // Set sticker size
-    droppedSticker.style.width = '64px';
-    droppedSticker.style.height = '64px';
+
+    // Set the size to be responsive and maintain the aspect ratio
+    droppedSticker.style.width = '10vw';
+    droppedSticker.style.maxWidth = '64px';
+    droppedSticker.style.height = 'auto';
     
     // Set the position relative to the overlay
     droppedSticker.style.left = `${x * overlayRect.width}px`;
@@ -163,7 +167,8 @@ async function loadStickers() {
       img.classList.add('stickers');
       stickersContainer.appendChild(img);
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error loading stickers:', error);
   }
 }
@@ -172,6 +177,6 @@ async function loadStickers() {
 document.addEventListener('DOMContentLoaded', () => {
   setupCamera();
   loadStickers().then(enableDragAndDrop);
-  window.addEventListener('resize', syncOverlaySize); // Keep overlay in sync with resizing
-  window.addEventListener('resize', updateOverlayPosition); // Adjust overlay position on window resize
+  window.addEventListener('resize', syncOverlaySize);
+  window.addEventListener('resize', updateOverlayPosition);
 });

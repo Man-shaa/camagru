@@ -145,7 +145,6 @@ main {
   pointer-events: none;
   background: transparent;
 }
-
 .stickers-container {
   display: flex;
   flex-direction: column;
@@ -153,10 +152,12 @@ main {
 }
 
 .stickers-container img {
-  width: 50px;
-  height: 50px;
+  width: 10vw; /* Responsive size based on viewport width */
+  max-width: 64px; /* Cap the size to a maximum of 64px */
+  height: auto; /* Maintain aspect ratio */
   margin-bottom: 10px;
   cursor: pointer;
+  image-rendering: crisp-edges; /* Helps with quality */
 }
 
 .dropped-sticker {
