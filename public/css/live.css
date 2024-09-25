@@ -133,7 +133,8 @@ main {
 
 #video {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
 }
 
 .overlay-layer {
@@ -152,12 +153,12 @@ main {
 }
 
 .stickers-container img {
-  width: 10vw; /* Responsive size based on viewport width */
-  max-width: 64px; /* Cap the size to a maximum of 64px */
-  height: auto; /* Maintain aspect ratio */
+  width: 10vw;
+  max-width: 64px;
+  height: auto;
   margin-bottom: 10px;
   cursor: pointer;
-  image-rendering: crisp-edges; /* Helps with quality */
+  image-rendering: crisp-edges;
 }
 
 .dropped-sticker {
