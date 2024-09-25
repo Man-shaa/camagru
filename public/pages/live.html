@@ -4,37 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Profile</title>
-	<script src="/firebase.js" type="module" defer></script>
+  <script src="/firebase.js" type="module" defer></script>
   <script src="/auth.js" type="module"></script>
   <link rel="stylesheet" href="/live.css">
 </head>
 <body>
-	<header>
-		<h1 class="title-container">Camagru</h1>
-		<div class="homepage-container">
+  <header>
+    <h1 class="title-container">Camagru</h1>
+    <div class="homepage-container">
       <a href="/homepage" class="homepage-btn">Homepage</a>
     </div>
 
-		<!-- Logout Button -->
-		<div id="logout-btn-container" class="logout-btn-container" style="display: none;">
-			<a href="/signin" id="logout" class="logout-btn">Logout</a>
-		</div>
-	</header>
+    <!-- Logout Button -->
+    <div id="logout-btn-container" class="logout-btn-container" style="display: none;">
+      <a href="/signin" id="logout" class="logout-btn">Logout</a>
+    </div>
+  </header>
 
-	<main class="container">
+  <main class="container">
     <div class="video-container">
-      <video id="video" autoplay></video>
-      <div id="overlay" class="overlay-layer"></div>
+      <div id="video-wrapper" class="video-wrapper">
+        <video id="video" autoplay></video>
+        <div id="overlay" class="overlay-layer"></div>
+      </div>
       <div class="stickers-container">
-        <!-- Stickers wll be added -->
+        <!-- Stickers will be added dynamically -->
       </div>
     </div>
-		<button id="take-picture-btn">Take Picture</button>
+    <button id="take-picture-btn">Take Picture</button>
   </main>
 
-	<footer>
-		<p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
-	</footer>
+  <footer>
+    <p>&copy; 2024 Manuel Sharifi. All rights reserved.</p>
+  </footer>
 
   <script src="/live.js" type="module"></script>
 </body>

@@ -6,48 +6,75 @@ const auth = getAuth();
 const storage = getStorage();
 const logoutButton = document.getElementById('logout');
 const video = document.getElementById('video');
-const takePictureButton = document.getElementById('take-picture-btn');
 const overlay = document.getElementById('overlay');
+const takePictureButton = document.getElementById('take-picture-btn');
 let isPictureTaken = false;
-let videoWidth, videoHeight;
+let stickers = []; // Track stickers and their positions
 
 // Logout button listener
 logoutButton.addEventListener('click', () => {
   signOut(auth)
     .then(() => {
       const logoutBtnContainer = document.getElementById('logout-btn-container');
-      const signinBtnContainer = document.getElementById('signin-btn-container');
-
-      if (logoutBtnContainer)
-        logoutBtnContainer.style.display = 'none';
-      if (signinBtnContainer)
-        signinBtnContainer.style.display = 'block';
+      if (logoutBtnContainer) logoutBtnContainer.style.display = 'none';
     })
-    .catch((error) => {
-      console.log('Error signing out:', error);
-    });
+    .catch((error) => console.log('Error signing out:', error));
 });
 
+// Setup camera stream
 async function setupCamera() {
   const stream = await navigator.mediaDevices.getUserMedia({ video: true });
   video.srcObject = stream;
   video.onloadedmetadata = () => {
-    videoWidth = video.videoWidth;
-    videoHeight = video.videoHeight;
-    video.style.width = `${videoWidth}px`;
-    video.style.height = `${videoHeight}px`;
-    setOverlaySize(); // Call to set overlay size after video metadata is loaded
     video.play();
+    syncOverlaySize(); // Ensure overlay syncs with video size
+    updateOverlayPosition(); // Call here to adjust overlay size when video loads
   };
 }
 
+// Resize and sync the overlay and video size
+function syncOverlaySize() {
+  const videoRect = video.getBoundingClientRect();
+  overlay.style.width = `${videoRect.width}px`;
+  overlay.style.height = `${videoRect.height}px`;
+
+  // Scaling factor based on the current width of the video
+  const videoScaleFactorX = videoRect.width / video.videoWidth;
+  const videoScaleFactorY = videoRect.height / video.videoHeight;
+
+  // Update sticker positions and resize them
+  stickers.forEach(sticker => {
+    const stickerElement = sticker.element;
+
+    // Update the position relative to the current video size
+    const relativeX = sticker.relativeX * videoRect.width;
+    const relativeY = sticker.relativeY * videoRect.height;
+    stickerElement.style.left = `${relativeX}px`;
+    stickerElement.style.top = `${relativeY}px`;
+
+    // Adjust sticker size proportionally
+    const newWidth = sticker.originalWidth * videoScaleFactorX;
+    const newHeight = sticker.originalHeight * videoScaleFactorY;
+    stickerElement.style.width = `${newWidth}px`;
+    stickerElement.style.height = `${newHeight}px`;
+  });
+}
+
+// Adjust the overlay size based on the video wrapper size
+function updateOverlayPosition() {
+  const videoWrapper = document.getElementById('video-wrapper');
+  const overlay = document.getElementById('overlay');
+  
+  overlay.style.width = `${videoWrapper.clientWidth}px`;
+  overlay.style.height = `${videoWrapper.clientHeight}px`;
+}
+
+// Handle taking and displaying a picture
 function takePicture() {
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
-
-  canvas.width = videoWidth;
-  canvas.height = videoHeight;
-
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL('image/png');
 }
@@ -56,106 +83,95 @@ function displayPicture(imageDataUrl) {
   video.style.backgroundImage = `url(${imageDataUrl})`;
   video.style.backgroundSize = 'cover';
   video.style.backgroundPosition = 'center';
-  video.style.width = `${videoWidth}px`;
-  video.style.height = `${videoHeight}px`;
   video.srcObject = null; // Stop video stream
 }
 
+// Capture button event listener
 takePictureButton.addEventListener('click', () => {
   if (isPictureTaken) {
-    setupCamera(); // Switch back to live video
+    setupCamera();
     video.style.backgroundImage = '';
     takePictureButton.textContent = 'Take Picture';
     isPictureTaken = false;
-  }
-  else {
+  } else {
     const imageDataUrl = takePicture();
-    displayPicture(imageDataUrl); // Display captured image
+    displayPicture(imageDataUrl);
     takePictureButton.textContent = 'Back to Live';
     isPictureTaken = true;
   }
 });
 
-// Function to load stickers dynamically
-async function loadStickers() {
-  const stickersFolderRef = ref(storage, 'stickers/');
-
-  const stickersContainer = document.querySelector('.stickers-container');
-
-  try {
-    const stickersList = await listAll(stickersFolderRef);
-
-    for (const itemRef of stickersList.items) {
-      const url = await getDownloadURL(itemRef);
-
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = `Sticker: ${itemRef.name}`;
-      img.draggable="true"
-      img.classList.add('stickers');
-      
-      stickersContainer.appendChild(img);
-    }
-  }
-  catch (error) {
-    console.error('Error loading stickers:', error);
-  }
-}
-
-function setOverlaySize() {
-  const overlay = document.getElementById('overlay');
-  overlay.style.width = `${video.clientWidth}px`;
-  overlay.style.height = `${video.clientHeight}px`;
-}
-
+// Enable drag and drop for stickers
 function enableDragAndDrop() {
-  const stickers = document.querySelectorAll('.stickers');
+  const stickersElements = document.querySelectorAll('.stickers');
 
-  stickers.forEach(sticker => {
+  stickersElements.forEach(sticker => {
     sticker.addEventListener('dragstart', (event) => {
-      // Set the dragged sticker's URL into dataTransfer
-      event.dataTransfer.setData('text/plain', event.target.src); // Use 'text/plain' MIME type
+      event.dataTransfer.setData('text/plain', event.target.src); // Drag sticker source URL
     });
   });
 }
 
-video.addEventListener('dragover', (event) => {
-  event.preventDefault();
-});
+video.addEventListener('dragover', (event) => event.preventDefault());
+
 video.addEventListener('drop', (event) => {
   event.preventDefault();
-
-  // Retrieve the sticker URL from the dragged item
-  const stickerSrc = event.dataTransfer.getData('text/plain'); // Same 'text/plain' type as set during dragstart
-
-  // Ensure you have a valid sticker source
+  const stickerSrc = event.dataTransfer.getData('text/plain');
   if (stickerSrc) {
-    const rect = overlay.getBoundingClientRect(); // Use overlay's dimensions for positioning
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    const overlayRect = overlay.getBoundingClientRect(); // Use overlay for positioning
+    const x = (event.clientX - overlayRect.left - 32) / overlayRect.width;
+    const y = (event.clientY - overlayRect.top - 32) / overlayRect.height;
 
     const droppedSticker = document.createElement('img');
     droppedSticker.src = stickerSrc;
     droppedSticker.classList.add('dropped-sticker');
+    
+    // Set sticker size
+    droppedSticker.style.width = '64px';
+    droppedSticker.style.height = '64px';
+    
+    // Set the position relative to the overlay
+    droppedSticker.style.left = `${x * overlayRect.width}px`;
+    droppedSticker.style.top = `${y * overlayRect.height}px`;
 
-    droppedSticker.style.position = 'absolute';
-    droppedSticker.style.left = `${x - 25}px`; // Adjust for center positioning
-    droppedSticker.style.top = `${y - 25}px`;
-
-    // Append the dropped sticker to the overlay (not the video)
     overlay.appendChild(droppedSticker);
+
+    // Save relative position for responsiveness
+    stickers.push({
+      element: droppedSticker,
+      relativeX: x,
+      relativeY: y,
+      originalWidth: 64,
+      originalHeight: 64
+    });
   }
 });
 
+// Load stickers dynamically
+async function loadStickers() {
+  const stickersFolderRef = ref(storage, 'stickers/');
+  const stickersContainer = document.querySelector('.stickers-container');
 
-// Update the size of the overlay when the window is resized
-window.addEventListener('resize', setOverlaySize);
+  try {
+    const stickersList = await listAll(stickersFolderRef);
+    for (const itemRef of stickersList.items) {
+      const url = await getDownloadURL(itemRef);
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = `Sticker: ${itemRef.name}`;
+      img.draggable = "true";
+      img.classList.add('stickers');
+      stickersContainer.appendChild(img);
+    }
+  } catch (error) {
+    console.error('Error loading stickers:', error);
+  }
+}
 
-// Initialize video stream when the page loads
+// Initialize everything on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
   setupCamera();
-  loadStickers()
-  .then(() => {
-    enableDragAndDrop();
-  });
+  loadStickers().then(enableDragAndDrop);
+  window.addEventListener('resize', syncOverlaySize); // Keep overlay in sync with resizing
+  window.addEventListener('resize', updateOverlayPosition); // Adjust overlay position on window resize
 });
