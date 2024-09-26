@@ -115,26 +115,29 @@ main {
 .container {
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  max-width: 1000px;
+  width: 95%;
+  height: 100%;
 }
 
 .video-container {
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: row;
   align-items: center;
 }
 
 .video-wrapper {
   position: relative;
-  width: 100%;
-  max-width: 600px;
+  width: 100%; /* Full width of container */
+  max-width: 640px; /* Constrain to a reasonable max size */
+  aspect-ratio: 4 / 3; /* Keep the aspect ratio for video */
 }
 
 #video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* Ensures video fills the container */
+  background-color: black; /* Optional: fallback color in case video is not playing */
 }
 
 .overlay-layer {
@@ -146,6 +149,7 @@ main {
   pointer-events: none;
   background: transparent;
 }
+
 .stickers-container {
   display: flex;
   flex-direction: column;

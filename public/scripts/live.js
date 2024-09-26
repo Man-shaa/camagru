@@ -52,38 +52,61 @@ function syncOverlaySize() {
     stickerElement.style.left = `${relativeX}px`;
     stickerElement.style.top = `${relativeY}px`;
 
-    // Adjust sticker size proportionally, but keep it small
-    const newWidth = 64 * videoScaleFactorX;
-    const newHeight = 64 * videoScaleFactorY;
-    stickerElement.style.width = `${Math.min(newWidth, 64)}px`;
+    // Adjust sticker size proportionally based on the video scale
+    const newWidth = sticker.originalWidth * videoScaleFactorX;
+    const newHeight = sticker.originalHeight * videoScaleFactorY;
+    stickerElement.style.width = `${Math.min(newWidth, 64)}px`; // Max size cap of 64px
     stickerElement.style.height = `${Math.min(newHeight, 64)}px`;
   });
 }
+
 
 // Adjust the overlay size based on the video wrapper size
 function updateOverlayPosition() {
   const videoWrapper = document.getElementById('video-wrapper');
   const overlay = document.getElementById('overlay');
-  
+
   overlay.style.width = `${videoWrapper.clientWidth}px`;
   overlay.style.height = `${videoWrapper.clientHeight}px`;
 }
 
 // Handle taking and displaying a picture
 function takePicture() {
+  const videoRect = video.getBoundingClientRect(); // Get the rendered size of the video element
+  
+  // Create a canvas element with the same size as the rendered video
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  
+  // Set the canvas width and height based on the rendered video dimensions
+  canvas.width = videoRect.width;
+  canvas.height = videoRect.height;
+  
+  // Draw the current video frame onto the canvas
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  return (canvas.toDataURL('image/png'));
+  
+  // Return the captured image as a Data URL
+  return canvas.toDataURL('image/png');
 }
 
+
 function displayPicture(imageDataUrl) {
+  // Get the current size of the video element
+  const videoWrapper = document.getElementById('video-wrapper');
+  const videoRect = videoWrapper.getBoundingClientRect(); // Use the wrapper's size for responsiveness
+  console.log(videoRect);
+
+  // Stop the video stream and replace it with the captured image
+  video.srcObject = null;
   video.style.backgroundImage = `url(${imageDataUrl})`;
-  video.style.backgroundSize = 'cover';
+  video.style.backgroundSize = '100%';   // Ensures the image fills the space
   video.style.backgroundPosition = 'center';
-  video.srcObject = null; // Stop video stream
+
+  // Set the width and height based on the wrapper to ensure responsiveness
+  video.style.width = videoRect.width;  // Keep the width of the video responsive
+  video.style.height = videoRect.height; // Maintain aspect ratio
+
+  // Sync overlay size and position
   syncOverlaySize();
   updateOverlayPosition();
 }
@@ -179,4 +202,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadStickers().then(enableDragAndDrop);
   window.addEventListener('resize', syncOverlaySize);
   window.addEventListener('resize', updateOverlayPosition);
+
 });
