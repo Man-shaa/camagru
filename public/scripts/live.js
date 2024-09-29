@@ -1,5 +1,6 @@
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
+import { initializeAuthListener } from "./auth.js";
 
 // Global variables
 const auth = getAuth();
@@ -10,6 +11,16 @@ const overlay = document.getElementById('overlay');
 const takePictureButton = document.getElementById('take-picture-btn');
 let isPictureTaken = false;
 let stickers = []; // Track stickers and their positions
+
+// init auth listener
+initializeAuthListener((user) => {
+  console.log('Logged user:', user);
+
+  // Redirect if the user is not logged
+  if (!user) {
+    window.location.href = '/signin';
+  }
+});
 
 // Logout button listener
 logoutButton.addEventListener('click', () => {
