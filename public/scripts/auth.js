@@ -28,7 +28,8 @@ export function updateCurrentUser(user) {
 const elements = {
   signinBtnContainer: document.getElementById('signin-btn-container'),
   logoutBtnContainer: document.getElementById('logout-btn-container'),
-  uploadBtnContainer: document.getElementById('upload-container')
+  uploadBtnContainer: document.getElementById('upload-container'),
+  liveBtnContainer: document.getElementById('live-btn-container')
 };
 
 function updateUI(user) {
@@ -39,6 +40,8 @@ function updateUI(user) {
 			elements.logoutBtnContainer.style.display = 'block';
     if (elements.uploadBtnContainer)
 			elements.uploadBtnContainer.style.display = 'flex';
+    if (elements.liveBtnContainer)
+			elements.liveBtnContainer.style.display = 'flex';
   } else {
     if (elements.signinBtnContainer)
 			elements.signinBtnContainer.style.display = 'block';
@@ -46,6 +49,8 @@ function updateUI(user) {
 			elements.logoutBtnContainer.style.display = 'none';
     if (elements.uploadBtnContainer)
 			elements.uploadBtnContainer.style.display = 'none';
+    if (elements.liveBtnContainer)
+			elements.liveBtnContainer.style.display = 'none';
   }
 }
 

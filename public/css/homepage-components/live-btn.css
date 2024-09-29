@@ -1,0 +1,31 @@
+.live-btn-container {
+  display: none;
+  justify-content: center; /* Centers the button horizontally */
+  align-items: center; /* Centers the button vertically */
+  margin-top: 20px; /* Adds some space above the container */
+}
+
+.live-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  border: 2px solid transparent;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+}
+
+.live-btn {
+  background-color: #28a745; /* Green color for live button */
+  margin-top: 20px 40%; /* Optional: Adds some space above the button */
+}
+
+.live-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+  border-color: #1e7e34;
+}
