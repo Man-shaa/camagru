@@ -41,7 +41,9 @@ function fetchImages(page) {
 }
 
 // Initial fetch of images for the first page
-fetchImages(currentPage);
+document.addEventListener('DOMContentLoaded', () => {
+	fetchImages(currentPage);
+});
 
 export function createImageElement(imageUrl, fileName, docId) {
 	const imagesContainer = document.getElementById('imagesContainer');

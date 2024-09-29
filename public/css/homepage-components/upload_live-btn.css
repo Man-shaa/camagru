@@ -1,0 +1,56 @@
+/* Parent container to hold both buttons in one line */
+.action-btns-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Ensure each button/container has proper spacing */
+.upload-container, .live-btn-container {
+  margin-right: 20px;
+}
+
+.upload-container:last-child, .live-btn-container:last-child {
+  margin-right: 0;
+}
+
+/* Button styles (unchanged) */
+.upload-btn, .live-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  border: 2px solid transparent;
+  border-radius: 25px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Green color for both buttons */
+.upload-btn, .live-btn {
+  background-color: #28a745;
+}
+
+.upload-btn:hover, .live-btn:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .action-btns-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .upload-container, .live-btn-container {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}

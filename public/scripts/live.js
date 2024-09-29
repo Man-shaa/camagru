@@ -213,5 +213,4 @@ document.addEventListener('DOMContentLoaded', () => {
   loadStickers().then(enableDragAndDrop);
   window.addEventListener('resize', syncOverlaySize);
   window.addEventListener('resize', updateOverlayPosition);
-
 });
