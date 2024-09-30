@@ -71,7 +71,6 @@ function syncOverlaySize() {
   });
 }
 
-
 // Adjust the overlay size based on the video wrapper size
 function updateOverlayPosition() {
   const videoWrapper = document.getElementById('video-wrapper');
@@ -101,21 +100,10 @@ function takePicture() {
 }
 
 document.getElementById('fileInput').addEventListener('change', function(event) {
-	const currentUserId = getCurrentUser().uid;
-
 	const file = event.target.files[0];
 	if (file) {
-		const uniqueFileName = `${currentUserId}_${Date.now()}_${file.name}`;
-		const metadata = {
-			customMetadata: {
-				userId: currentUserId,
-				fileName: file.name
-			}
-		};
-    console.log(file)
     const uploadedImage = URL.createObjectURL(file);
-    displayPicture(uploadedImage);
-    console.log(uploadedImage);
+    setupPictureView(uploadedImage);
 	}
 });
 
@@ -123,7 +111,6 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 document.getElementById('uploadButton').addEventListener('click', function() {
 	document.getElementById('fileInput').click();
 });
-
 
 function displayPicture(imageDataUrl) {
   // Get the current size of the video element
@@ -146,19 +133,27 @@ function displayPicture(imageDataUrl) {
   updateOverlayPosition();
 }
 
+function setupLiveView() {
+  setupCamera();
+  video.style.backgroundImage = '';
+  takePictureButton.textContent = 'Take Picture';
+  isPictureTaken = false;
+}
+
+function setupPictureView(imageDataUrl) {
+  displayPicture(imageDataUrl);
+  takePictureButton.textContent = 'Back to Live';
+  isPictureTaken = true;
+}
+
 // Capture button event listener
 takePictureButton.addEventListener('click', () => {
   if (isPictureTaken) {
-    setupCamera();
-    video.style.backgroundImage = '';
-    takePictureButton.textContent = 'Take Picture';
-    isPictureTaken = false;
+    setupLiveView()
   }
   else {
-    const imageDataUrl = takePicture();
-    displayPicture(imageDataUrl);
-    takePictureButton.textContent = 'Back to Live';
-    isPictureTaken = true;
+  const imageDataUrl = takePicture();
+  setupPictureView(imageDataUrl)
   }
 });
 
