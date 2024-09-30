@@ -1,16 +1,22 @@
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getStorage, ref, listAll, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 import { initializeAuthListener, getCurrentUser } from "./auth.js";
 
-// Global variables
 const auth = getAuth();
 const storage = getStorage();
+const db = getFirestore();
+
+// Global variables
 const logoutButton = document.getElementById('logout');
 const video = document.getElementById('video');
 const overlay = document.getElementById('overlay');
 const takePictureButton = document.getElementById('take-picture-btn');
+const savePictureButton = document.getElementById('save-picture-btn');
+const videoWrapper = document.getElementById('video-wrapper');
 let isPictureTaken = false;
-let stickers = []; // Track stickers and their positions
+let stickers = [];
+let currentUser = null;
 
 // init auth listener
 initializeAuthListener((user) => {
@@ -20,6 +26,7 @@ initializeAuthListener((user) => {
   if (!user) {
     window.location.href = '/signin';
   }
+  currentUser = getCurrentUser();
 });
 
 // Logout button listener
@@ -73,7 +80,6 @@ function syncOverlaySize() {
 
 // Adjust the overlay size based on the video wrapper size
 function updateOverlayPosition() {
-  const videoWrapper = document.getElementById('video-wrapper');
   const overlay = document.getElementById('overlay');
 
   overlay.style.width = `${videoWrapper.clientWidth}px`;
@@ -114,7 +120,6 @@ document.getElementById('uploadButton').addEventListener('click', function() {
 
 function displayPicture(imageDataUrl) {
   // Get the current size of the video element
-  const videoWrapper = document.getElementById('video-wrapper');
   const videoRect = videoWrapper.getBoundingClientRect(); // Use the wrapper's size for responsiveness
   console.log(videoRect);
 
@@ -138,12 +143,14 @@ function setupLiveView() {
   video.style.backgroundImage = '';
   takePictureButton.textContent = 'Take Picture';
   isPictureTaken = false;
+  savePictureButton.style.display = 'none';
 }
 
 function setupPictureView(imageDataUrl) {
   displayPicture(imageDataUrl);
   takePictureButton.textContent = 'Back to Live';
   isPictureTaken = true;
+  savePictureButton.style.display = 'block';
 }
 
 // Capture button event listener
@@ -155,6 +162,102 @@ takePictureButton.addEventListener('click', () => {
   const imageDataUrl = takePicture();
   setupPictureView(imageDataUrl)
   }
+});
+
+function uploadImage(currentUserId, file) {
+	const uniqueFileName = `${currentUserId}_${Date.now()}_${file.name}`;
+	const imageStorageRef = ref(storage, 'images/' + uniqueFileName);
+	const metadata = {
+		customMetadata: {
+			userId: currentUserId,
+			fileName: file.name
+		}
+	};
+
+  const blobFile = base64ToBlob(file, 'image/png');
+  console.log(blobFile);
+
+  // setFileToSessionStorage(file, uniqueFileName);
+	uploadBytes(imageStorageRef, blobFile, metadata)
+	.then((snapshot) => {
+		getDownloadURL(snapshot.ref)
+		.then((url) => {
+      console.log("final url :", url);
+			addDoc(collection(db, 'images'), {
+				uniqueImageName: uniqueFileName,
+				imageUrl: url,
+				fileName: "test",
+				userId: currentUserId,
+				createdAt: new Date()
+			})  
+			.then((docRef) => {
+				// createImageElement(url, file.name, docRef.id);
+        // setFileToSessionStorage(file);
+				// window.location.reload();
+			});
+		})
+		.catch((error) => {
+			console.log("Error getting download URL: ", error);
+		});
+	})
+	.catch((error) => {
+		console.log("Error uploading file: ", error);
+	});
+};
+
+function base64ToBlob(base64, type) {
+  const byteCharacters = atob(base64.split(',')[1]);
+  const byteNumbers = new Uint8Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  return new Blob([byteNumbers], { type: type });
+}
+
+savePictureButton.addEventListener('click', () => {
+  const videoRect = videoWrapper.getBoundingClientRect();
+  
+  // Create a canvas with the same dimensions as the video wrapper
+  const canvas = document.createElement('canvas');
+  canvas.width = videoRect.width;
+  canvas.height = videoRect.height;
+
+  const context = canvas.getContext('2d');
+
+  // Draw the background image (which is currently set as the video background image)
+  const backgroundImage = new Image();
+  backgroundImage.src = video.style.backgroundImage.slice(5, -2); // Extract URL from the `background-image` property
+
+  backgroundImage.onload = () => {
+    // Draw the background image to cover the entire canvas
+    context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+    // Draw all stickers on top of the background
+    stickers.forEach(sticker => {
+      const stickerElement = sticker.element;
+      const stickerRect = stickerElement.getBoundingClientRect();
+      
+      // Calculate position relative to the canvas size
+      const xPos = stickerRect.left - videoRect.left;
+      const yPos = stickerRect.top - videoRect.top;
+      
+      // Draw the sticker on the canvas at the calculated position
+      const stickerImage = new Image();
+      stickerImage.src = stickerElement.src;
+
+      stickerImage.onload = () => {
+        context.drawImage(stickerImage, xPos, yPos, stickerElement.width, stickerElement.height);
+      };
+    });
+
+    // Once all the drawing is done, convert the canvas to a data URL (image in base64)
+    const combinedImage = canvas.toDataURL('image/png');
+
+    console.log(combinedImage);  // For now, it logs the base64 URL, but you can save or download it.
+
+    // Example: Display the combined image
+    uploadImage(currentUser.uid, combinedImage);
+  };
 });
 
 // Enable drag and drop for stickers

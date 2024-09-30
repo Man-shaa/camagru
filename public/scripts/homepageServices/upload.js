@@ -8,6 +8,40 @@ import { createImageElement } from "./galerie.js";
 const db = getFirestore();
 const storage = getStorage();
 
+export function uploadImage(currentUserId, file) {
+	const uniqueFileName = `${currentUserId}_${Date.now()}_${file.name}`;
+	const imageStorageRef = ref(storage, 'images/' + uniqueFileName);
+	const metadata = {
+		customMetadata: {
+			userId: currentUserId,
+			fileName: file.name
+		}
+	};
+	uploadBytes(imageStorageRef, file, metadata)
+	.then((snapshot) => {
+		getDownloadURL(snapshot.ref)
+		.then((url) => {
+			addDoc(collection(db, 'images'), {
+				uniqueImageName: uniqueFileName,
+				imageUrl: url,
+				fileName: file.name,
+				userId: currentUserId,
+				createdAt: new Date()
+			})
+			.then((docRef) => {
+				createImageElement(url, file.name, docRef.id);
+				window.location.reload();
+			});
+		})
+		.catch((error) => {
+			console.log("Error getting download URL: ", error);
+		});
+	})
+	.catch((error) => {
+		console.log("Error uploading file: ", error);
+	});
+};
+
 // Upload and add a new image to Firestore when clicking on upload button
 document.getElementById('fileInput').addEventListener('change', function(event) {
 	const currentUser = getCurrentUser();
@@ -16,41 +50,9 @@ document.getElementById('fileInput').addEventListener('change', function(event) 
 		console.log("user must be logged to upload an image");
 		return;
 	}
-
 	const file = event.target.files[0];
 	if (file) {
-		const uniqueFileName = `${currentUser.uid}_${Date.now()}_${file.name}`;
-		const imageStorageRef = ref(storage, 'images/' + uniqueFileName);
-		const metadata = {
-			customMetadata: {
-				userId: currentUser.uid,
-				fileName: file.name
-			}
-		};
-
-		uploadBytes(imageStorageRef, file, metadata)
-		.then((snapshot) => {
-			getDownloadURL(snapshot.ref)
-			.then((url) => {
-				addDoc(collection(db, 'images'), {
-					uniqueImageName: uniqueFileName,
-					imageUrl: url,
-					fileName: file.name,
-					userId: currentUser.uid,
-					createdAt: new Date()
-				})
-				.then((docRef) => {
-					createImageElement(url);
-					window.location.reload();
-				});
-			})
-			.catch((error) => {
-				console.log("Error getting download URL: ", error);
-			});
-		})
-		.catch((error) => {
-			console.log("Error uploading file: ", error);
-		});
+		uploadImage(currentUser.uid, file);
 	}
 });
 

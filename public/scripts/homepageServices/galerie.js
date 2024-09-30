@@ -17,28 +17,45 @@ function fetchImages(page) {
   const imagesQuery = query(imagesCollectionRef, orderBy('createdAt', 'asc'));
 
   getDocs(imagesQuery)
-    .then((querySnapshot) => {
-      // Update total number of images
-      totalImages = querySnapshot.size;
+	.then((querySnapshot) => {
+		// Update total number of images
+		totalImages = querySnapshot.size;
 
-      // Calculate the start and end index for images to display
-      const startIndex = (page - 1) * imagesPerPage;
-      const endIndex = startIndex + imagesPerPage;
+		// Calculate the start and end index for images to display
+		const startIndex = (page - 1) * imagesPerPage;
+		const endIndex = startIndex + imagesPerPage;
 
-      // Iterate through Firestore documents and display images for the current page
-      querySnapshot.docs.slice(startIndex, endIndex).forEach((doc) => {
-        const imageUrl = doc.data().imageUrl;
-				const fileName = doc.data().fileName;
-        createImageElement(imageUrl, fileName, doc.id);
-      });
+		// Iterate through Firestore documents and display images for the current page
+		querySnapshot.docs.slice(startIndex, endIndex).forEach((doc) => {
+			const imageUrl = doc.data().imageUrl;
+			const fileName = doc.data().fileName;
+			createImageElement(imageUrl, fileName, doc.id);
+		});
 
-      // Generate pagination buttons
-      generatePaginationButtons();
-    })
-    .catch((error) => {
-      console.log('Error getting documents:', error);
-    });
+		// Generate pagination buttons
+		generatePaginationButtons();
+	})
+	.catch((error) => {
+		console.log('Error getting documents:', error);
+	});
 }
+
+// document.addEventListener("DOMContentLoaded", function() {
+// 	const imagesContainer = document.getElementById("imagesContainer");
+// 	const storedImages = sessionStorage.getItem('images');
+
+// 	if (storedImages) {
+// 			const image = JSON.parse(storedImages);
+// 			console.log("New images found in sessionStorage.", image);
+
+// 					createImageElement(image.url, image.fileName);
+// 					window.sessionStorage.removeItem('images');
+// 					window.location.reload();
+// 	}
+// 	else {
+// 			console.log("No new images found in sessionStorage.");
+// 	}
+// });
 
 // Initial fetch of images for the first page
 document.addEventListener('DOMContentLoaded', () => {

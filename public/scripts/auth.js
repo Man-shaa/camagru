@@ -42,7 +42,8 @@ function updateUI(user) {
 			elements.uploadBtnContainer.style.display = 'flex';
     if (elements.liveBtnContainer)
 			elements.liveBtnContainer.style.display = 'flex';
-  } else {
+  }
+  else {
     if (elements.signinBtnContainer)
 			elements.signinBtnContainer.style.display = 'block';
     if (elements.logoutBtnContainer)
