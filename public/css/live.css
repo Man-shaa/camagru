@@ -120,6 +120,7 @@ main {
 }
 
 .video-container {
+  justify-content: center;
   width: 100%;
   height: 100%;
   display: flex;
@@ -128,16 +129,15 @@ main {
 
 .video-wrapper {
   position: relative;
-  width: 100%; /* Full width of container */
-  max-width: 640px; /* Constrain to a reasonable max size */
-  aspect-ratio: 4 / 3; /* Keep the aspect ratio for video */
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 4 / 3;
 }
 
 #video {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures video fills the container */
-  background-color: black; /* Optional: fallback color in case video is not playing */
+  object-fit: cover;
 }
 
 .overlay-layer {
@@ -155,6 +155,8 @@ main {
   flex-direction: column;
   margin-left: 20px;
 }
+
+/* background-image: url(&quot;blob:http://localhost:3001/885f22dd-7de8-417e-82c3-5ac27b55b17b&quot;); background-size: 100%; background-position: center center; */
 
 .stickers-container img {
   width: 10vw;

@@ -1,6 +1,6 @@
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { getStorage, ref, listAll, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
-import { initializeAuthListener } from "./auth.js";
+import { initializeAuthListener, getCurrentUser } from "./auth.js";
 
 // Global variables
 const auth = getAuth();
@@ -97,8 +97,32 @@ function takePicture() {
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
   
   // Return the captured image as a Data URL
-  return canvas.toDataURL('image/png');
+  return (canvas.toDataURL('image/png'));
 }
+
+document.getElementById('fileInput').addEventListener('change', function(event) {
+	const currentUserId = getCurrentUser().uid;
+
+	const file = event.target.files[0];
+	if (file) {
+		const uniqueFileName = `${currentUserId}_${Date.now()}_${file.name}`;
+		const metadata = {
+			customMetadata: {
+				userId: currentUserId,
+				fileName: file.name
+			}
+		};
+    console.log(file)
+    const uploadedImage = URL.createObjectURL(file);
+    displayPicture(uploadedImage);
+    console.log(uploadedImage);
+	}
+});
+
+// Trigger file input when the upload button is clicked
+document.getElementById('uploadButton').addEventListener('click', function() {
+	document.getElementById('fileInput').click();
+});
 
 
 function displayPicture(imageDataUrl) {
