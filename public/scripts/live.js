@@ -175,7 +175,7 @@ function uploadImage(currentUserId, file) {
 	};
 
   const blobFile = base64ToBlob(file, 'image/png');
-  console.log(blobFile);
+  // console.log(blobFile);
 
   // setFileToSessionStorage(file, uniqueFileName);
 	uploadBytes(imageStorageRef, blobFile, metadata)
@@ -267,6 +267,7 @@ function enableDragAndDrop() {
   stickersElements.forEach(sticker => {
     sticker.addEventListener('dragstart', (event) => {
       event.dataTransfer.setData('text/plain', event.target.src);
+      event.dataTransfer.setData('sticker-id', event.target.dataset.stickerId || '');
     });
   });
 }
@@ -275,37 +276,79 @@ video.addEventListener('dragover', (event) => event.preventDefault());
 
 video.addEventListener('drop', (event) => {
   event.preventDefault();
+  
   const stickerSrc = event.dataTransfer.getData('text/plain');
-  if (stickerSrc) {
-    const overlayRect = overlay.getBoundingClientRect();
-    const x = (event.clientX - overlayRect.left - 32) / overlayRect.width;
-    const y = (event.clientY - overlayRect.top - 32) / overlayRect.height;
+  const stickerId = event.dataTransfer.getData('sticker-id');
 
-    const droppedSticker = document.createElement('img');
-    droppedSticker.src = stickerSrc;
-    droppedSticker.classList.add('dropped-sticker');
+  if (stickerId) {
+    const stickerElement = document.querySelector(`[data-sticker-id="${stickerId}"]`);
+    moveSticker(event, stickerElement);
+  }
+  else if (stickerSrc) {
+    // New sticker drop
+    const newSticker = document.createElement('img');
+    newSticker.src = stickerSrc;
+    newSticker.classList.add('dropped-sticker');
 
-    // Set the size to be responsive and maintain the aspect ratio
-    droppedSticker.style.width = '10vw';
-    droppedSticker.style.maxWidth = '64px';
-    droppedSticker.style.height = 'auto';
-    
-    // Set the position relative to the overlay
-    droppedSticker.style.left = `${x * overlayRect.width}px`;
-    droppedSticker.style.top = `${y * overlayRect.height}px`;
+    // Set unique identifier for this sticker for future moves
+    const uniqueStickerId = `sticker-${Date.now()}`;
+    newSticker.dataset.stickerId = uniqueStickerId;
 
-    overlay.appendChild(droppedSticker);
+    // Make the new sticker draggable
+    newSticker.draggable = true;
+    newSticker.style.width = '64px';  // Set max width
+    newSticker.style.height = '64px'; // Set max height
+    newSticker.style.position = 'absolute';
 
-    // Save relative position for responsiveness
+    newSticker.addEventListener('dragstart', (event) => {
+      event.dataTransfer.setData('text/plain', event.target.src);
+      event.dataTransfer.setData('sticker-id', event.target.dataset.stickerId);
+    });
+    overlay.appendChild(newSticker);
+    moveSticker(event, newSticker);
+
+    // Save the new sticker with its initial position for responsiveness
     stickers.push({
-      element: droppedSticker,
-      relativeX: x,
-      relativeY: y,
+      element: newSticker,
+      relativeX: (event.clientX - overlay.getBoundingClientRect().left) / overlay.clientWidth,
+      relativeY: (event.clientY - overlay.getBoundingClientRect().top) / overlay.clientHeight,
       originalWidth: 64,
       originalHeight: 64
     });
   }
 });
+
+
+// Function to calculate and set sticker position
+function moveSticker(event, stickerElement) {
+  const overlayRect = overlay.getBoundingClientRect();
+  const x = event.clientX - overlayRect.left - 32; // Adjust for half the width (32px) of the sticker
+  const y = event.clientY - overlayRect.top - 32;  // Adjust for half the height (32px) of the sticker
+
+  stickerElement.style.left = `${x}px`;
+  stickerElement.style.top = `${y}px`;
+
+  // Update the sticker's relative position for future resizing
+  const sticker = stickers.find(s => s.element === stickerElement);
+  if (sticker) {
+    sticker.relativeX = x / overlayRect.width;
+    sticker.relativeY = y / overlayRect.height;
+  }
+}
+
+// Sync the sticker positions when the overlay or window is resized
+function syncStickersPosition() {
+  const overlayRect = overlay.getBoundingClientRect();
+  
+  stickers.forEach(sticker => {
+    // Calculate the new position based on the relative position and overlay size
+    const relativeX = sticker.relativeX * overlayRect.width;
+    const relativeY = sticker.relativeY * overlayRect.height;
+
+    sticker.element.style.left = `${relativeX}px`;
+    sticker.element.style.top = `${relativeY}px`;
+  });
+}
 
 // Load stickers dynamically
 async function loadStickers() {
@@ -335,4 +378,5 @@ document.addEventListener('DOMContentLoaded', () => {
   loadStickers().then(enableDragAndDrop);
   window.addEventListener('resize', syncOverlaySize);
   window.addEventListener('resize', updateOverlayPosition);
+  window.addEventListener('resize', syncStickersPosition);
 });
