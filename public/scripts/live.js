@@ -214,9 +214,31 @@ function base64ToBlob(base64, type) {
   return new Blob([byteNumbers], { type: type });
 }
 
+function drawStickersSequentially(context, canvas, stickers) {
+  const drawStickerPromises = stickers.map(sticker => {
+    return new Promise((resolve) => {
+      const stickerImage = new Image();
+      stickerImage.src = sticker.element.src; // Use Data URL
+      stickerImage.onload = () => {
+        const stickerRect = sticker.element.getBoundingClientRect();
+        const xPos = stickerRect.left - canvas.getBoundingClientRect().left;
+        const yPos = stickerRect.top - canvas.getBoundingClientRect().top;
+        context.drawImage(stickerImage, xPos, yPos, sticker.originalWidth, sticker.originalHeight);
+        resolve();
+      };
+    });
+  });
+
+  Promise.all(drawStickerPromises).then(() => {
+    const combinedImage = canvas.toDataURL('image/png');
+    console.log(combinedImage);
+    uploadImage(currentUser.uid, combinedImage);
+  });
+}
+
 savePictureButton.addEventListener('click', () => {
   const videoRect = videoWrapper.getBoundingClientRect();
-  
+
   // Create a canvas with the same dimensions as the video wrapper
   const canvas = document.createElement('canvas');
   canvas.width = videoRect.width;
@@ -224,41 +246,16 @@ savePictureButton.addEventListener('click', () => {
 
   const context = canvas.getContext('2d');
 
-  // Draw the background image (which is currently set as the video background image)
+  // Draw the background image
   const backgroundImage = new Image();
-  backgroundImage.src = video.style.backgroundImage.slice(5, -2); // Extract URL from the `background-image` property
+  backgroundImage.src = video.style.backgroundImage.slice(5, -2);
 
   backgroundImage.onload = () => {
-    // Draw the background image to cover the entire canvas
     context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-
-    // Draw all stickers on top of the background
-    stickers.forEach(sticker => {
-      const stickerElement = sticker.element;
-      const stickerRect = stickerElement.getBoundingClientRect();
-      
-      // Calculate position relative to the canvas size
-      const xPos = stickerRect.left - videoRect.left;
-      const yPos = stickerRect.top - videoRect.top;
-      
-      // Draw the sticker on the canvas at the calculated position
-      const stickerImage = new Image();
-      stickerImage.src = stickerElement.src;
-
-      stickerImage.onload = () => {
-        context.drawImage(stickerImage, xPos, yPos, stickerElement.width, stickerElement.height);
-      };
-    });
-
-    // Once all the drawing is done, convert the canvas to a data URL (image in base64)
-    const combinedImage = canvas.toDataURL('image/png');
-
-    console.log(combinedImage);  // For now, it logs the base64 URL, but you can save or download it.
-
-    // Example: Display the combined image
-    uploadImage(currentUser.uid, combinedImage);
+    drawStickersSequentially(context, canvas, stickers);
   };
 });
+
 
 // Enable drag and drop for stickers
 function enableDragAndDrop() {
@@ -350,6 +347,20 @@ function syncStickersPosition() {
   });
 }
 
+async function fetchAsDataUrl(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const blob = await response.blob();
+    return URL.createObjectURL(blob); // Convert the Blob to a Data URL
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    throw error; // Rethrow to handle it in the calling function
+  }
+}
+
 // Load stickers dynamically
 async function loadStickers() {
   const stickersFolderRef = ref(storage, 'stickers/');
@@ -359,8 +370,9 @@ async function loadStickers() {
     const stickersList = await listAll(stickersFolderRef);
     for (const itemRef of stickersList.items) {
       const url = await getDownloadURL(itemRef);
+      const stickerDataUrl = await fetchAsDataUrl(url); // Convert to Data URL
       const img = document.createElement('img');
-      img.src = url;
+      img.src = stickerDataUrl; // Use Data URL
       img.alt = `Sticker: ${itemRef.name}`;
       img.draggable = "true";
       img.classList.add('stickers');
