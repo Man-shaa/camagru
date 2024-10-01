@@ -40,23 +40,6 @@ function fetchImages(page) {
 	});
 }
 
-// document.addEventListener("DOMContentLoaded", function() {
-// 	const imagesContainer = document.getElementById("imagesContainer");
-// 	const storedImages = sessionStorage.getItem('images');
-
-// 	if (storedImages) {
-// 			const image = JSON.parse(storedImages);
-// 			console.log("New images found in sessionStorage.", image);
-
-// 					createImageElement(image.url, image.fileName);
-// 					window.sessionStorage.removeItem('images');
-// 					window.location.reload();
-// 	}
-// 	else {
-// 			console.log("No new images found in sessionStorage.");
-// 	}
-// });
-
 // Initial fetch of images for the first page
 document.addEventListener('DOMContentLoaded', () => {
 	fetchImages(currentPage);

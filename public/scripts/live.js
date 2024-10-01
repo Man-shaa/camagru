@@ -175,9 +175,7 @@ function uploadImage(currentUserId, file) {
 	};
 
   const blobFile = base64ToBlob(file, 'image/png');
-  // console.log(blobFile);
 
-  // setFileToSessionStorage(file, uniqueFileName);
 	uploadBytes(imageStorageRef, blobFile, metadata)
 	.then((snapshot) => {
 		getDownloadURL(snapshot.ref)
@@ -190,11 +188,6 @@ function uploadImage(currentUserId, file) {
 				userId: currentUserId,
 				createdAt: new Date()
 			})  
-			.then((docRef) => {
-				// createImageElement(url, file.name, docRef.id);
-        // setFileToSessionStorage(file);
-				// window.location.reload();
-			});
 		})
 		.catch((error) => {
 			console.log("Error getting download URL: ", error);
