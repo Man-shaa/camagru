@@ -42,6 +42,26 @@
   z-index: 100;
 }
 
+.like-btn {
+  left: 10px;
+  font-size: 24px;
+  font-weight: bolder;
+  color: #3124ba;
+  cursor: pointer;
+  z-index: 100;
+}
+
+#like-count {
+  position: relative;
+  left: 50%;
+  cursor: default;
+  bottom: 10px;
+  transform: translateX(-50%);
+  font-size: 20px;
+  color: #fff;
+  z-index: 100;
+}
+
 .container .popup-image img {
   position: absolute;
   top: 50%;
