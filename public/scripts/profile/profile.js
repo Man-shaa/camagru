@@ -72,9 +72,9 @@ async function promptForPassword() {
 
     if (password) {
       resolve(password);
-    } else {
-      reject("Password not provided");
     }
+    else
+      reject("Password not provided");
   });
 }
 

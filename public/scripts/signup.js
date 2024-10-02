@@ -85,13 +85,13 @@ signupForm.addEventListener("click", (e) => {
         .catch((error) => {
           console.error("Error sending email verification: ", error);
         });
-      } else {
-        console.error("User is not properly authenticated.");
       }
-        })
-        .catch((error) => {
-          console.log("Error updating profile: ", error);
-        });
+      else
+        console.error("User is not properly authenticated.");
+      })
+      .catch((error) => {
+        console.log("Error updating profile: ", error);
+      });
     })
     .catch((error) => {
       const errorCode = error.code;

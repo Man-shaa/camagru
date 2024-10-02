@@ -73,3 +73,80 @@
   max-height: 50%;
   object-fit: cover;
 }
+
+#like-count {
+  color: #fff;
+  font-size: 18px;
+  margin: 10px 0;
+  text-align: center;
+}
+
+#like-button {
+  color: #fff;
+  background-color: blue;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+#like-button.unliked {
+  background-color: blue;
+}
+
+#like-button.liked {
+  background-color: red;
+}
+
+#like-button.unliked:hover {
+  background-color: darkblue;
+}
+
+#like-button.liked:hover {
+  background-color: darkred;
+}
+
+#comments-section {
+  margin-top: 20px;
+  text-align: center;
+  color: #fff;
+}
+
+#comment-input {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #fff;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+#comment-button {
+  background-color: #2ed573; /* Green */
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+#comment-button:hover {
+  background-color: #1c6c3b; /* Darker Green */
+}
+
+/* Comments List */
+#comments-list {
+  margin-top: 10px;
+}
+
+.comment {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+  margin: 5px 0;
+}

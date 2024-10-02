@@ -33,12 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
           .catch((error) => {
             console.error("Error saving user data: ", error);
           });
-        } else {
-          alert("Your email is not verified yet. Please check your email.");
         }
-      } else {
-        window.location.href = '/signin';
+        else
+          alert("Your email is not verified yet. Please check your email.");
       }
+      else
+        window.location.href = '/signin';
     });
   }
 
