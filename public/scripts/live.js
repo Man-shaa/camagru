@@ -181,13 +181,13 @@ function uploadImage(currentUserId, file) {
 		getDownloadURL(snapshot.ref)
 		.then((url) => {
       console.log("final url :", url);
-			addDoc(collection(db, 'images'), {
-				uniqueImageName: uniqueFileName,
-				imageUrl: url,
-				fileName: "test",
-				userId: currentUserId,
-				createdAt: new Date()
-			})  
+			// addDoc(collection(db, 'images'), {
+			// 	uniqueImageName: uniqueFileName,
+			// 	imageUrl: url,
+			// 	fileName: "test",
+			// 	userId: currentUserId,
+			// 	createdAt: new Date()
+			// })  
 		})
 		.catch((error) => {
 			console.log("Error getting download URL: ", error);
@@ -264,6 +264,7 @@ function enableDragAndDrop() {
 
 video.addEventListener('dragover', (event) => event.preventDefault());
 
+// Ensure the position is being calculated and saved correctly during drop
 video.addEventListener('drop', (event) => {
   event.preventDefault();
   
@@ -275,19 +276,16 @@ video.addEventListener('drop', (event) => {
     moveSticker(event, stickerElement);
   }
   else if (stickerSrc) {
-    // New sticker drop
     const newSticker = document.createElement('img');
     newSticker.src = stickerSrc;
     newSticker.classList.add('dropped-sticker');
 
-    // Set unique identifier for this sticker for future moves
     const uniqueStickerId = `sticker-${Date.now()}`;
     newSticker.dataset.stickerId = uniqueStickerId;
 
-    // Make the new sticker draggable
     newSticker.draggable = true;
-    newSticker.style.width = '64px';  // Set max width
-    newSticker.style.height = '64px'; // Set max height
+    newSticker.style.width = '64px';  // Max width
+    newSticker.style.height = '64px'; // Max height
     newSticker.style.position = 'absolute';
 
     newSticker.addEventListener('dragstart', (event) => {
@@ -295,30 +293,44 @@ video.addEventListener('drop', (event) => {
       event.dataTransfer.setData('sticker-id', event.target.dataset.stickerId);
     });
     overlay.appendChild(newSticker);
-    moveSticker(event, newSticker);
 
-    // Save the new sticker with its initial position for responsiveness
+    // Calculate initial relative position
+    const relativeX = (event.clientX - overlay.getBoundingClientRect().left) / overlay.clientWidth;
+    const relativeY = (event.clientY - overlay.getBoundingClientRect().top) / overlay.clientHeight;
+
+    // Log the position of the first sticker
+    console.log(`First Sticker Position: x=${relativeX}, y=${relativeY}`);
+
+    // Save new sticker's initial position for responsiveness
     stickers.push({
       element: newSticker,
-      relativeX: (event.clientX - overlay.getBoundingClientRect().left) / overlay.clientWidth,
-      relativeY: (event.clientY - overlay.getBoundingClientRect().top) / overlay.clientHeight,
+      relativeX: relativeX,
+      relativeY: relativeY,
       originalWidth: 64,
       originalHeight: 64
     });
+
+    // Update the position based on drop
+    moveSticker(event, newSticker);
   }
 });
+
 
 
 // Function to calculate and set sticker position
 function moveSticker(event, stickerElement) {
   const overlayRect = overlay.getBoundingClientRect();
-  const x = event.clientX - overlayRect.left - 32; // Adjust for half the width (32px) of the sticker
-  const y = event.clientY - overlayRect.top - 32;  // Adjust for half the height (32px) of the sticker
+  const stickerRect = stickerElement.getBoundingClientRect();
+  
+  // Calculate the position based on mouse position relative to the overlay, centered using half the sticker size
+  const x = event.clientX - overlayRect.left - (stickerRect.width / 2);
+  const y = event.clientY - overlayRect.top - (stickerRect.height / 2);
 
+  // Apply the new position
   stickerElement.style.left = `${x}px`;
   stickerElement.style.top = `${y}px`;
 
-  // Update the sticker's relative position for future resizing
+  // Update the sticker's relative position for responsiveness
   const sticker = stickers.find(s => s.element === stickerElement);
   if (sticker) {
     sticker.relativeX = x / overlayRect.width;
@@ -326,12 +338,11 @@ function moveSticker(event, stickerElement) {
   }
 }
 
-// Sync the sticker positions when the overlay or window is resized
 function syncStickersPosition() {
   const overlayRect = overlay.getBoundingClientRect();
   
   stickers.forEach(sticker => {
-    // Calculate the new position based on the relative position and overlay size
+    // Calculate the new position based on the relative position and current overlay size
     const relativeX = sticker.relativeX * overlayRect.width;
     const relativeY = sticker.relativeY * overlayRect.height;
 
