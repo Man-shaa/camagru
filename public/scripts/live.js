@@ -2,6 +2,7 @@ import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/fir
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getStorage, ref, listAll, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 import { initializeAuthListener, getCurrentUser } from "./auth.js";
+import { getUserFiles } from "./homepageServices/firestore-db.js";
 
 const auth = getAuth();
 const storage = getStorage();
@@ -149,38 +150,55 @@ takePictureButton.addEventListener('click', () => {
 });
 
 function uploadImage(currentUserId, file) {
-	const uniqueFileName = `${currentUserId}_${Date.now()}_${file.name}`;
-	const imageStorageRef = ref(storage, 'images/' + uniqueFileName);
-	const metadata = {
-		customMetadata: {
-			userId: currentUserId,
-			fileName: file.name
-		}
-	};
+  const uniqueFileName = `${currentUserId}_${Date.now()}_${"test"}`;
+  const imageStorageRef = ref(storage, 'images/' + uniqueFileName);
+  const metadata = {
+    customMetadata: {
+      userId: currentUserId,
+      fileName: "test"
+    }
+  };
 
   const blobFile = base64ToBlob(file, 'image/png');
 
-	uploadBytes(imageStorageRef, blobFile, metadata)
-	.then((snapshot) => {
-		getDownloadURL(snapshot.ref)
-		.then((url) => {
-      console.log("final url :", url);
-			addDoc(collection(db, 'images'), {
-				uniqueImageName: uniqueFileName,
-				imageUrl: url,
-				fileName: "test",
-				userId: currentUserId,
-				createdAt: new Date()
-			})  
-		})
-		.catch((error) => {
-			console.log("Error getting download URL: ", error);
-		});
-	})
-	.catch((error) => {
-		console.log("Error uploading file: ", error);
-	});
-};
+  uploadBytes(imageStorageRef, blobFile, metadata)
+  .then((snapshot) => {
+    getDownloadURL(snapshot.ref)
+    .then((url) => {
+      console.log("final url:", url);
+
+      // Add to 'images' collection
+      addDoc(collection(db, 'images'), {
+        uniqueImageName: uniqueFileName,
+        imageUrl: url,
+        fileName: "test",
+        userId: currentUserId,
+        createdAt: new Date()
+      });
+
+      // Add to '/users/$currentUserId/uploads/' collection
+      const userUploadsRef = collection(db, `users/${currentUserId}/uploads`);
+      addDoc(userUploadsRef, {
+        uniqueImageName: uniqueFileName,
+        fileName: "test",
+        imageUrl: url,
+        uploadedAt: new Date()
+      })
+      .then(() => {
+        console.log("File details added to user uploads.");
+      })
+      .catch((error) => {
+        console.error("Error adding file details to user uploads:", error);
+      });
+    })
+    .catch((error) => {
+      console.log("Error getting download URL:", error);
+    });
+  })
+  .catch((error) => {
+    console.log("Error uploading file:", error);
+  });
+}
 
 function base64ToBlob(base64, type) {
   const byteCharacters = atob(base64.split(',')[1]);

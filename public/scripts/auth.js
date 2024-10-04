@@ -1,4 +1,5 @@
 import { onAuthStateChanged, getAuth } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getUserFiles } from "./homepageServices/firestore-db.js";
 
 // Global variables
 const auth = getAuth();
@@ -59,4 +60,8 @@ function updateUI(user) {
 onAuthStateChanged(auth, (user) => {
   updateUI(user);
 	updateCurrentUser(user);
+	// getUserFiles(user.uid)
+	// .then((fileNames) => {
+	//   console.log("user files : ", fileNames)
+	// })
 });

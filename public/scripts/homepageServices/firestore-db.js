@@ -1,4 +1,6 @@
-import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { deleteDoc, getFirestore, getDocs, collection } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+
+const db = getFirestore();
 
 // delete an image from Firestore using the image reference
 function deleteFirestoreImage(imageRef) {
@@ -16,4 +18,28 @@ function deleteFirestoreImage(imageRef) {
 	});
 }
 
-export { deleteFirestoreImage };
+// get all files's uniqueImageName uploaded from user [userId]
+async function getUserFiles(userId) {
+  try {
+		console.log("userId : ", userId);
+    const userUploadsRef = collection(db, `users/${userId}/uploads`);
+
+    const querySnapshot = await getDocs(userUploadsRef);
+    
+    const uniqueImageNames = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data && data.uniqueImageName)
+        uniqueImageNames.push(data.uniqueImageName);
+    });
+		
+    // Return an array of all uniqueImageNames
+    return (uniqueImageNames);
+  }
+	catch (error) {
+    console.error("Error retrieving user files: ", error);
+    throw error;
+  }
+}
+
+export { deleteFirestoreImage, getUserFiles };

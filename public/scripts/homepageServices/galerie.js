@@ -14,7 +14,7 @@ function fetchImages(page) {
   imagesContainer.innerHTML = '';
 
   // Create a query that orders by 'createdAt' in descending order
-  const imagesQuery = query(imagesCollectionRef, orderBy('createdAt', 'asc'));
+  const imagesQuery = query(imagesCollectionRef, orderBy('createdAt', 'desc'));
 
   getDocs(imagesQuery)
 	.then((querySnapshot) => {
