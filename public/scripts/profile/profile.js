@@ -1,10 +1,12 @@
-import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { collection, query, where, getDocs, getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, deleteUser, signOut} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-
 import { initializeAuthListener, getCurrentUser, updateCurrentUser } from "../auth.js";
+import { deleteObject, ref, getStorage } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
+import { getUserFiles } from "../homepageServices/firestore-db.js";
 
 const auth = getAuth();
 const db = getFirestore();
+const storage = getStorage()
 
 const usernameField = document.getElementById("username");
 const emailField = document.getElementById("email");
@@ -193,18 +195,54 @@ async function deleteUserAuth(user) {
   }
 }
 
+// Function to delete image documents in Firestore based on uniqueFileName
+async function deleteUserImagesByUniqueFileNames(uniqueFileNames) {
+  try {
+    const imagesCollectionRef = collection(db, 'images');
+    
+    for (const uniqueFileName of uniqueFileNames) {
+      // Query the images collection for the document with the matching uniqueFileName
+      const q = query(imagesCollectionRef, where('uniqueImageName', '==', uniqueFileName));
+      const querySnapshot = await getDocs(q);
+
+      // Iterate through the results and delete the documents
+      querySnapshot.forEach(async (docSnap) => {
+        const docRef = doc(db, 'images', docSnap.id); // Document reference
+        await deleteDoc(docRef); // Delete the document in Firestore
+        console.log(`Deleted Firestore document for uniqueFileName: ${uniqueFileName}`);
+        
+        // Also delete the file from Firebase Storage
+        const fileRef = ref(storage, `images/${uniqueFileName}`);
+        await deleteObject(fileRef); // Delete the file in Firebase Storage
+        console.log(`Deleted file from Firebase Storage: ${uniqueFileName}`);
+      });
+    }
+  } catch (error) {
+    console.error("Error deleting user images:", error);
+    throw error;
+  }
+}
+
 // Delete an account on Firebase Auth and Firestore
 async function deleteAccount(user) {
   try {
     await reauthenticateUser(user);
 
+    // Step 1: Get all the user's uploaded files
+    const uniqueFileNames = await getUserFiles(user.uid); // This returns the array of uniqueFileNames
+
+    // Step 2: Delete Firestore documents and Firebase Storage files for the user
+    await deleteUserImagesByUniqueFileNames(uniqueFileNames); // Deletes the files and documents
+
+    // Step 3: Delete the user's Firestore document
     await deleteUserFirestore(user);
 
+    // Step 4: Delete the user's Firebase Auth account
     await deleteUserAuth(user);
 
+    // Redirect to signin page
     window.location.href = "/signin";
-  }
-  catch (error) {
+  } catch (error) {
     if (error.code === "auth/wrong-password")
       error = "Wrong password provided";
     else if (error.code === "auth/too-many-requests")
