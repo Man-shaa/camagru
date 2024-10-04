@@ -20,9 +20,6 @@ let currentUser = null;
 
 // init auth listener
 initializeAuthListener((user) => {
-  console.log('Logged user:', user);
-
-  // Redirect if the user is not logged
   if (!user) {
     window.location.href = '/signin';
   }
@@ -56,24 +53,20 @@ function syncOverlaySize() {
   overlay.style.width = `${videoRect.width}px`;
   overlay.style.height = `${videoRect.height}px`;
 
-  // Scaling factor based on the current width of the video
   const videoScaleFactorX = videoRect.width / video.videoWidth;
   const videoScaleFactorY = videoRect.height / video.videoHeight;
 
-  // Update sticker positions and resize them
   stickers.forEach(sticker => {
     const stickerElement = sticker.element;
 
-    // Update the position relative to the current video size
     const relativeX = sticker.relativeX * videoRect.width;
     const relativeY = sticker.relativeY * videoRect.height;
     stickerElement.style.left = `${relativeX}px`;
     stickerElement.style.top = `${relativeY}px`;
 
-    // Adjust sticker size proportionally based on the video scale
     const newWidth = sticker.originalWidth * videoScaleFactorX;
     const newHeight = sticker.originalHeight * videoScaleFactorY;
-    stickerElement.style.width = `${Math.min(newWidth, 64)}px`; // Max size cap of 64px
+    stickerElement.style.width = `${Math.min(newWidth, 64)}px`;
     stickerElement.style.height = `${Math.min(newHeight, 64)}px`;
   });
 }
@@ -88,20 +81,15 @@ function updateOverlayPosition() {
 
 // Handle taking and displaying a picture
 function takePicture() {
-  const videoRect = video.getBoundingClientRect(); // Get the rendered size of the video element
-  
-  // Create a canvas element with the same size as the rendered video
+  const videoRect = video.getBoundingClientRect();
+
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   
-  // Set the canvas width and height based on the rendered video dimensions
   canvas.width = videoRect.width;
   canvas.height = videoRect.height;
   
-  // Draw the current video frame onto the canvas
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
-  // Return the captured image as a Data URL
   return (canvas.toDataURL('image/png'));
 }
 
@@ -119,21 +107,17 @@ document.getElementById('uploadButton').addEventListener('click', function() {
 });
 
 function displayPicture(imageDataUrl) {
-  // Get the current size of the video element
-  const videoRect = videoWrapper.getBoundingClientRect(); // Use the wrapper's size for responsiveness
+  const videoRect = videoWrapper.getBoundingClientRect();
   console.log(videoRect);
 
-  // Stop the video stream and replace it with the captured image
   video.srcObject = null;
   video.style.backgroundImage = `url(${imageDataUrl})`;
-  video.style.backgroundSize = '100%';   // Ensures the image fills the space
+  video.style.backgroundSize = '100%';
   video.style.backgroundPosition = 'center';
 
-  // Set the width and height based on the wrapper to ensure responsiveness
-  video.style.width = videoRect.width;  // Keep the width of the video responsive
-  video.style.height = videoRect.height; // Maintain aspect ratio
+  video.style.width = videoRect.width;
+  video.style.height = videoRect.height;
 
-  // Sync overlay size and position
   syncOverlaySize();
   updateOverlayPosition();
 }
@@ -181,13 +165,13 @@ function uploadImage(currentUserId, file) {
 		getDownloadURL(snapshot.ref)
 		.then((url) => {
       console.log("final url :", url);
-			// addDoc(collection(db, 'images'), {
-			// 	uniqueImageName: uniqueFileName,
-			// 	imageUrl: url,
-			// 	fileName: "test",
-			// 	userId: currentUserId,
-			// 	createdAt: new Date()
-			// })  
+			addDoc(collection(db, 'images'), {
+				uniqueImageName: uniqueFileName,
+				imageUrl: url,
+				fileName: "test",
+				userId: currentUserId,
+				createdAt: new Date()
+			})  
 		})
 		.catch((error) => {
 			console.log("Error getting download URL: ", error);
@@ -208,14 +192,19 @@ function base64ToBlob(base64, type) {
 }
 
 function drawStickersSequentially(context, canvas, stickers) {
+  const overlayRect = overlay.getBoundingClientRect();
+  const canvasRect = canvas.getBoundingClientRect();
+  
   const drawStickerPromises = stickers.map(sticker => {
     return new Promise((resolve) => {
       const stickerImage = new Image();
-      stickerImage.src = sticker.element.src; // Use Data URL
+      stickerImage.src = sticker.element.src;
       stickerImage.onload = () => {
         const stickerRect = sticker.element.getBoundingClientRect();
-        const xPos = stickerRect.left - canvas.getBoundingClientRect().left;
-        const yPos = stickerRect.top - canvas.getBoundingClientRect().top;
+
+        const xPos = stickerRect.left - overlayRect.left;
+        const yPos = stickerRect.top - overlayRect.top;
+
         context.drawImage(stickerImage, xPos, yPos, sticker.originalWidth, sticker.originalHeight);
         resolve();
       };
@@ -232,14 +221,12 @@ function drawStickersSequentially(context, canvas, stickers) {
 savePictureButton.addEventListener('click', () => {
   const videoRect = videoWrapper.getBoundingClientRect();
 
-  // Create a canvas with the same dimensions as the video wrapper
   const canvas = document.createElement('canvas');
   canvas.width = videoRect.width;
   canvas.height = videoRect.height;
 
   const context = canvas.getContext('2d');
 
-  // Draw the background image
   const backgroundImage = new Image();
   backgroundImage.src = video.style.backgroundImage.slice(5, -2);
 
@@ -284,8 +271,8 @@ video.addEventListener('drop', (event) => {
     newSticker.dataset.stickerId = uniqueStickerId;
 
     newSticker.draggable = true;
-    newSticker.style.width = '64px';  // Max width
-    newSticker.style.height = '64px'; // Max height
+    newSticker.style.width = '64px';
+    newSticker.style.height = '64px';
     newSticker.style.position = 'absolute';
 
     newSticker.addEventListener('dragstart', (event) => {
@@ -294,14 +281,9 @@ video.addEventListener('drop', (event) => {
     });
     overlay.appendChild(newSticker);
 
-    // Calculate initial relative position
     const relativeX = (event.clientX - overlay.getBoundingClientRect().left) / overlay.clientWidth;
     const relativeY = (event.clientY - overlay.getBoundingClientRect().top) / overlay.clientHeight;
 
-    // Log the position of the first sticker
-    console.log(`First Sticker Position: x=${relativeX}, y=${relativeY}`);
-
-    // Save new sticker's initial position for responsiveness
     stickers.push({
       element: newSticker,
       relativeX: relativeX,
@@ -310,7 +292,6 @@ video.addEventListener('drop', (event) => {
       originalHeight: 64
     });
 
-    // Update the position based on drop
     moveSticker(event, newSticker);
   }
 });
@@ -322,15 +303,12 @@ function moveSticker(event, stickerElement) {
   const overlayRect = overlay.getBoundingClientRect();
   const stickerRect = stickerElement.getBoundingClientRect();
   
-  // Calculate the position based on mouse position relative to the overlay, centered using half the sticker size
   const x = event.clientX - overlayRect.left - (stickerRect.width / 2);
   const y = event.clientY - overlayRect.top - (stickerRect.height / 2);
 
-  // Apply the new position
   stickerElement.style.left = `${x}px`;
   stickerElement.style.top = `${y}px`;
 
-  // Update the sticker's relative position for responsiveness
   const sticker = stickers.find(s => s.element === stickerElement);
   if (sticker) {
     sticker.relativeX = x / overlayRect.width;
@@ -342,7 +320,6 @@ function syncStickersPosition() {
   const overlayRect = overlay.getBoundingClientRect();
   
   stickers.forEach(sticker => {
-    // Calculate the new position based on the relative position and current overlay size
     const relativeX = sticker.relativeX * overlayRect.width;
     const relativeY = sticker.relativeY * overlayRect.height;
 
@@ -354,14 +331,14 @@ function syncStickersPosition() {
 async function fetchAsDataUrl(url) {
   try {
     const response = await fetch(url);
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(`HTTP error! Status: ${response.status}`);
-    }
     const blob = await response.blob();
-    return URL.createObjectURL(blob); // Convert the Blob to a Data URL
-  } catch (error) {
+    return URL.createObjectURL(blob);
+  }
+  catch (error) {
     console.error('Error fetching image:', error);
-    throw error; // Rethrow to handle it in the calling function
+    throw error;
   }
 }
 
@@ -374,9 +351,9 @@ async function loadStickers() {
     const stickersList = await listAll(stickersFolderRef);
     for (const itemRef of stickersList.items) {
       const url = await getDownloadURL(itemRef);
-      const stickerDataUrl = await fetchAsDataUrl(url); // Convert to Data URL
+      const stickerDataUrl = await fetchAsDataUrl(url);
       const img = document.createElement('img');
-      img.src = stickerDataUrl; // Use Data URL
+      img.src = stickerDataUrl;
       img.alt = `Sticker: ${itemRef.name}`;
       img.draggable = "true";
       img.classList.add('stickers');
