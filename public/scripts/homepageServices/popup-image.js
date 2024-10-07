@@ -2,6 +2,7 @@ import { getFirestore, getDoc, updateDoc, arrayUnion, arrayRemove, doc } from "h
 import { getCurrentUser } from "../auth.js";
 import { deleteFirebaseImage } from "./firebase-db.js";
 import { deleteFirestoreImage } from "./firestore-db.js";
+import { mailer } from "../mailer.js";
 
 const db = getFirestore();
 const likeCountElement = document.getElementById('like-count');
@@ -92,17 +93,18 @@ function handleLikeClick(docId) {
 									likeButton.classList.remove('liked');
 									likeButton.classList.add('unliked');
 
-									// send mail
-							}
-							// liked state
-							else {
+								}
+								// liked state
+								else {
 									likeCountElement.textContent = `${currentLikes + 1} Likes`;
 									updateLikes(docId, currentLikes + 1, arrayUnion(currentUser.uid));
-	
+									
 									// Update button state
 									likeButton.classList.remove('unliked');
 									likeButton.classList.add('liked');
-							}
+								}
+								// send mail
+								mailer("manuel.sharifi@gmail.com");
 						}
 				});
 			};

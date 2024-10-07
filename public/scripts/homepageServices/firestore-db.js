@@ -63,7 +63,8 @@ async function deleteCollection(db, collectionPath) {
       await deleteDoc(docRef);
       console.log(`Deleted document at ${collectionPath}/${docSnap.id}`);
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error(`Error deleting collection at ${collectionPath}:`, error);
     throw error;
   }
@@ -75,7 +76,8 @@ async function getSubcollections(docRef) {
     // Using listCollections to fetch all subcollections of the document
     const subcollections = await listCollections(docRef);
     return subcollections; // Return array of subcollection references
-  } catch (error) {
+  }
+  catch (error) {
     console.error(`Error getting subcollections for document ${docRef.path}:`, error);
     throw error;
   }
@@ -95,7 +97,8 @@ async function deleteUserFirestore(user) {
     // Now delete the user document itself after all subcollections are deleted
     await deleteDoc(userDocRef);
     console.log(`User document deleted successfully: ${userDocPath}`);
-  } catch (error) {
+  }
+  catch (error) {
     console.error(`Error deleting user document and subcollections:`, error);
     throw error;
   }
