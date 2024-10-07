@@ -76,14 +76,14 @@ function handleLikeClick(docId) {
 			}
 	
 			const imageDocRef = doc(db, 'images', docId);
-	
+
 			// Fetch the latest data from Firestore
 			getDoc(imageDocRef).then((docSnap) => {
 					if (docSnap.exists()) {
 							const likedBy = docSnap.data().likedBy || [];
 							const currentLikes = docSnap.data().likes || 0;
 	
-							// Optimistic UI update
+							// not liked state
 							if (likedBy.includes(currentUser.uid)) {
 									likeCountElement.textContent = `${currentLikes - 1} Likes`;
 									updateLikes(docId, currentLikes - 1, arrayRemove(currentUser.uid));
@@ -91,7 +91,11 @@ function handleLikeClick(docId) {
 									// Update button state
 									likeButton.classList.remove('liked');
 									likeButton.classList.add('unliked');
-							} else {
+
+									// send mail
+							}
+							// liked state
+							else {
 									likeCountElement.textContent = `${currentLikes + 1} Likes`;
 									updateLikes(docId, currentLikes + 1, arrayUnion(currentUser.uid));
 	
@@ -99,19 +103,13 @@ function handleLikeClick(docId) {
 									likeButton.classList.remove('unliked');
 									likeButton.classList.add('liked');
 							}
-							
-							if (likedBy.includes(currentUser.uid)) {
-								likeButton.classList.add('liked');
-							} else {
-								likeButton.classList.add('unliked');
-							}
 						}
 				});
 			};
 
 	function updateLikes(docId, newLikes, likeAction) {
 		const imageDocRef = doc(db, 'images', docId);
-		const validLikes = newLikes >= 0 ? newLikes : 0; // Ensure likes don't go below 0
+		const validLikes = newLikes >= 0 ? newLikes : 0;
 
 		updateDoc(imageDocRef, {
 			likes: validLikes,
