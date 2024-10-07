@@ -2,7 +2,7 @@ import { collection, query, where, getDocs, getFirestore, doc, getDoc, updateDoc
 import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, deleteUser, signOut} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { initializeAuthListener, getCurrentUser, updateCurrentUser } from "../auth.js";
 import { deleteObject, ref, getStorage } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
-import { getUserFiles } from "../homepageServices/firestore-db.js";
+import { deleteUserFirestore, getUserFiles } from "../homepageServices/firestore-db.js";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -170,19 +170,6 @@ async function reauthenticateUser(user) {
   }
 }
 
-// Delete user data from Firestore
-async function deleteUserFirestore(user) {
-  try {
-    const userRef = doc(db, "users", user.uid);
-    await deleteDoc(userRef)
-    console.log("User account deleted successfully from Firestore !");
-  }
-  catch (error) {
-    console.error("Error deleting user data in Firestore :", error);
-    throw error;
-  }
-}
-
 // Delete user account from Firebase Auth
 async function deleteUserAuth(user) {
   try {
@@ -217,7 +204,8 @@ async function deleteUserImagesByUniqueFileNames(uniqueFileNames) {
         console.log(`Deleted file from Firebase Storage: ${uniqueFileName}`);
       });
     }
-  } catch (error) {
+  }
+  catch (error) {
     console.error("Error deleting user images:", error);
     throw error;
   }
@@ -228,21 +216,20 @@ async function deleteAccount(user) {
   try {
     await reauthenticateUser(user);
 
-    // Step 1: Get all the user's uploaded files
-    const uniqueFileNames = await getUserFiles(user.uid); // This returns the array of uniqueFileNames
+    const uniqueFileNames = await getUserFiles(user.uid);
 
-    // Step 2: Delete Firestore documents and Firebase Storage files for the user
+    // Delete Firestore documents and Firebase Storage images for the user
     await deleteUserImagesByUniqueFileNames(uniqueFileNames); // Deletes the files and documents
 
-    // Step 3: Delete the user's Firestore document
+    // Delete the user's Firestore document
     await deleteUserFirestore(user);
 
-    // Step 4: Delete the user's Firebase Auth account
+    // Delete the user's Firebase Auth account
     await deleteUserAuth(user);
 
-    // Redirect to signin page
     window.location.href = "/signin";
-  } catch (error) {
+  }
+  catch (error) {
     if (error.code === "auth/wrong-password")
       error = "Wrong password provided";
     else if (error.code === "auth/too-many-requests")
