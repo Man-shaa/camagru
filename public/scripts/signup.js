@@ -20,6 +20,7 @@ function validateForm() {
   const username = document.getElementById("username").value.trim();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
+  const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
   if (!username) {
     showMessage("Username cannot be empty", "signupMessage");
@@ -47,6 +48,11 @@ function validateForm() {
     return false;
   }
 
+  if (password !== confirmPassword) {
+    showMessage("Passwords must be the same", "signupMessage");
+    return (false);
+  }
+  
   return true; // Validation passed
 }
 
@@ -120,6 +126,15 @@ togglePassword.addEventListener('click', () => {
   const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
   password.setAttribute('type', type);
   togglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+});
+
+const confirmTogglePassword = document.getElementById('confirmTogglePassword');
+const confirmPassword = document.getElementById('confirmPassword');
+
+confirmTogglePassword.addEventListener('click', () => {
+  const type = confirmPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+  confirmPassword.setAttribute('type', type);
+  confirmTogglePassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
 });
 
 export { showMessage };

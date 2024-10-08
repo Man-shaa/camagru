@@ -29,10 +29,18 @@ signinForm.addEventListener('click', (e) => {
 
 	signInWithEmailAndPassword(auth, email, password)
 	.then((cred) => {
-		showMessage('Successfully logged in', 'signinMessage');
-		setTimeout(() => {
-			window.location.href = '/homepage';
-		}, 2000);
+		const user = cred.user;
+
+		if (user.emailVerified === false) {
+			showMessage("Your mail isn't verified yet", 'signinMessage');
+			auth.signOut(); // Sign out the user if the email is not verified
+		}
+		else {
+			showMessage('Successfully logged in', 'signinMessage');
+			setTimeout(() => {
+				window.location.href = '/homepage';
+			}, 2000);
+		}
 	}).catch((err) => {
 		const errorCode = err.code;
 		if (errorCode === 'auth/invalid-credential') {

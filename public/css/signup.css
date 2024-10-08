@@ -95,12 +95,23 @@ form {
 
 .password-toggle {
   position: absolute;
-  right: 10px;
-  top: 35px;
+  right: 0;
+  top: 33px;
+  cursor: pointer;
+}
+
+.confirm-password-toggle {
+  position: absolute;
+  right: 0;
+  top: 10px;
   cursor: pointer;
 }
 
 .password-toggle .fa-eye, .password-toggle .fa-eye-slash {
+  font-size: 18px;
+}
+
+.confirm-password-toggle .fa-eye, .confirm-password-toggle .fa-eye-slash {
   font-size: 18px;
 }
 
