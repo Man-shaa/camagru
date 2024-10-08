@@ -25,39 +25,35 @@ document.querySelector('.images-container').addEventListener('click', (event) =>
 		const deleteBtn = document.getElementById('delete-button');
 		deleteBtn.style.display = 'none';
 
-		// Get userId from the image document in Firestore
 		const docId = clickedImage.getAttribute('data-doc-id');
-		console.log(docId);
 		const imagePopupRef = doc(db, 'images', docId);
 
 		getDoc(imagePopupRef).then((docSnap) => {
 			if (docSnap.exists()) {
 				const userId = docSnap.data().userId;
 				const currentUser = getCurrentUser();
-				console.log(currentUser, userId);
 				if (currentUser && currentUser.uid === userId) {
 					deleteBtn.style.display = 'block';
 					deleteBtn.onclick = () => {
-						deleteFirestoreImage(imagePopupRef);
-						deleteFirebaseImage(docSnap.data().uniqueImageName);
+						const uniqueFileName = docSnap.data().uniqueImageName;
+						deleteFirestoreImage(imagePopupRef, userId, uniqueFileName);
+						deleteFirebaseImage(uniqueFileName);
 					};
 				}
 				updateLikeCount(docSnap);
-
 				handleLikeClick(docId);
-
 				displayComments(docId);
 
-				// Handle comment button click
 				document.getElementById('comment-button').onclick = () => {
 					addComment(docId);
 				};
-			}
-			else
+			} else {
 				console.log("Document does not exist");
+			}
 		});
 	}
 });
+
 
 function updateLikeCount(docSnap) {
 	const currentLikes = docSnap.data().likes || 0;
@@ -101,8 +97,10 @@ function handleLikeClick(docId) {
 									// Update button state
 									likeButton.classList.remove('unliked');
 									likeButton.classList.add('liked');
+
+									// send mail
+									sendEmail(currentUser.email); // Send the email here
 								}
-								// send mail
 						}
 				});
 			};
@@ -118,6 +116,34 @@ function handleLikeClick(docId) {
 			console.error("Error updating likes:", error);
 		});
 	}
+}
+
+function sendEmail(userEmail) {
+	const subject = "New comment / like";
+	const message = "A user has commented or liked your image";
+
+	fetch(`/send_email/${userEmail}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			subject: subject,
+			message: message
+		})
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Network response was not ok');
+		}
+		return response.text();
+	})
+	.then(data => {
+		console.log('Email sent:', data);
+	})
+	.catch(error => {
+		console.error('Error sending email:', error);
+	});
 }
 
 // Function to display comments for a specific image

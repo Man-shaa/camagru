@@ -2,6 +2,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 const requestHandler = (req, res) => {
 	const url = req.url;
@@ -28,6 +29,48 @@ const requestHandler = (req, res) => {
 			}
 			res.writeHead(200, { "Content-Type": "text/javascript" });
 			res.end(data);
+		});
+	}
+	else if (url.startsWith('/send_email') && req.method === 'POST')
+	{
+		const userEmail = url.split('/send_email/')[1];
+		console.log("user_email", userEmail);
+		let body = '';
+		req.on('data', chunk => {
+			body += chunk.toString();
+		});
+		req.on('end', () => {
+			const data = JSON.parse(body);
+			console.log(data);
+
+			// send mail using nodemailer
+			const transporter = nodemailer.createTransport({
+				service: 'gmail',
+				auth: {
+					user: 'manuel.sharifi0@gmail.com',
+					pass: 'kzny kvvi atwx ctwx'
+				}
+			});
+
+			const mailOptions = {
+				from: 'manuel.sharifi0@gmail.com',
+				to: userEmail,
+				subject: data.subject,
+				text: data.message
+			};
+
+			transporter.sendMail(mailOptions, (error, info) => {
+				if (error) {
+					console.log(error);
+					res.writeHead(500, { "Content-Type": "text/plain" });
+					res.end("Error sending email");
+				}
+				else {
+					console.log('Email sent: ' + info.response);
+					res.writeHead(200, { "Content-Type": "text/plain" });
+					res.end("Email sent successfully");
+				}
+			});
 		});
 	}
 	else

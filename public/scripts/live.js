@@ -15,9 +15,12 @@ const overlay = document.getElementById('overlay');
 const takePictureButton = document.getElementById('take-picture-btn');
 const savePictureButton = document.getElementById('save-picture-btn');
 const videoWrapper = document.getElementById('video-wrapper');
+const cancelImageNameBtn = document.getElementById('cancelImageNameBtn');
+const saveImageNameBtn = document.getElementById('saveImageNameBtn');
 let isPictureTaken = false;
 let stickers = [];
 let currentUser = null;
+let imageName = '';
 
 // init auth listener
 initializeAuthListener((user) => {
@@ -150,12 +153,12 @@ takePictureButton.addEventListener('click', () => {
 });
 
 function uploadImage(currentUserId, file) {
-  const uniqueFileName = `${currentUserId}_${Date.now()}_${"test"}`;
+  const uniqueFileName = `${currentUserId}_${Date.now()}_${imageName}`;
   const imageStorageRef = ref(storage, 'images/' + uniqueFileName);
   const metadata = {
     customMetadata: {
       userId: currentUserId,
-      fileName: "test"
+      fileName: imageName
     }
   };
 
@@ -171,7 +174,7 @@ function uploadImage(currentUserId, file) {
       addDoc(collection(db, 'images'), {
         uniqueImageName: uniqueFileName,
         imageUrl: url,
-        fileName: "test",
+        fileName: imageName,
         userId: currentUserId,
         createdAt: new Date()
       });
@@ -180,7 +183,7 @@ function uploadImage(currentUserId, file) {
       const userUploadsRef = collection(db, `users/${currentUserId}/uploads`);
       addDoc(userUploadsRef, {
         uniqueImageName: uniqueFileName,
-        fileName: "test",
+        fileName: imageName,
         imageUrl: url,
         uploadedAt: new Date()
       })
@@ -211,8 +214,6 @@ function base64ToBlob(base64, type) {
 
 function drawStickersSequentially(context, canvas, stickers) {
   const overlayRect = overlay.getBoundingClientRect();
-  const canvasRect = canvas.getBoundingClientRect();
-  
   const drawStickerPromises = stickers.map(sticker => {
     return new Promise((resolve) => {
       const stickerImage = new Image();
@@ -232,6 +233,7 @@ function drawStickersSequentially(context, canvas, stickers) {
   Promise.all(drawStickerPromises).then(() => {
     const combinedImage = canvas.toDataURL('image/png');
     console.log(combinedImage);
+    // Call uploadImage here with the imageName that has been set in the modal
     uploadImage(currentUser.uid, combinedImage);
   });
 }
@@ -250,7 +252,7 @@ savePictureButton.addEventListener('click', () => {
 
   backgroundImage.onload = () => {
     context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-    drawStickersSequentially(context, canvas, stickers);
+    document.getElementById('imageNameModal').style.display = 'block';
   };
 });
 
@@ -382,6 +384,38 @@ async function loadStickers() {
     console.error('Error loading stickers:', error);
   }
 }
+
+cancelImageNameBtn.addEventListener('click', function() {
+  document.getElementById('imageNameModal').style.display = 'none';
+});
+
+saveImageNameBtn.addEventListener('click', function() {
+  imageName = document.getElementById('imageName').value;
+
+  if (imageName) {
+    console.log('Saving image with name:', imageName);
+    // Close the modal first
+    document.getElementById('imageNameModal').style.display = 'none';
+
+    // After closing the modal, proceed to upload the image
+    const videoRect = videoWrapper.getBoundingClientRect();
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRect.width;
+    canvas.height = videoRect.height;
+
+    const context = canvas.getContext('2d');
+
+    const backgroundImage = new Image();
+    backgroundImage.src = video.style.backgroundImage.slice(5, -2);
+
+    backgroundImage.onload = () => {
+      context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+      drawStickersSequentially(context, canvas, stickers); // This will handle the drawing and upload
+    };
+  } else {
+    alert('Please enter a name for the image.');
+  }
+});
 
 // Initialize everything on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {

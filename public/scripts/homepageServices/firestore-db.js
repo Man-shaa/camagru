@@ -1,22 +1,35 @@
-import { deleteDoc, getFirestore, getDocs, collection, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { deleteDoc, getFirestore, getDocs, query, where, collection, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
 const db = getFirestore();
 
 // delete an image from Firestore using the image reference
-function deleteFirestoreImage(imageRef) {
-	if (!imageRef) {
-		console.log("Image reference not found");
-		return;
-	}
-	deleteDoc(imageRef)
-	.then(() => {
-		console.log("Document successfully deleted!");
-		window.location.reload();
-	})
-	.catch((error) => {
-		console.error("Error removing document: ", error);
-	});
+async function deleteFirestoreImage(imageRef, userId, uniqueFileName) {
+  if (!imageRef) {
+      console.log("Image reference not found");
+      return;
+  }
+
+  // Delete the image from the /images collection
+  await deleteDoc(imageRef);
+  console.log("Document successfully deleted from /images collection!");
+
+  // Now search for the document in the /users/userId/uploads collection
+  const uploadsRef = collection(db, `users/${userId}/uploads`);
+  const q = query(uploadsRef, where('uniqueImageName', '==', uniqueFileName));
+  
+  const querySnapshot = await getDocs(q);
+  if (!querySnapshot.empty) {
+      // Assuming uniqueFileName is unique, we can safely get the first document
+      const uploadDocRef = querySnapshot.docs[0].ref;
+      await deleteDoc(uploadDocRef);
+      console.log("Upload document successfully deleted from /users/${userId}/uploads collection!");
+  }
+  else {
+      console.log("No matching upload document found.");
+  }
+  window.location.reload();
 }
+
 
 // get all files's uniqueImageName uploaded from user [userId]
 async function getUserFiles(userId) {
