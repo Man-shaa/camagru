@@ -256,7 +256,6 @@ savePictureButton.addEventListener('click', () => {
   };
 });
 
-
 // Enable drag and drop for stickers
 function enableDragAndDrop() {
   const stickersElements = document.querySelectorAll('.stickers');

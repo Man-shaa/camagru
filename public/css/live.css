@@ -173,31 +173,92 @@ main {
 }
 
 .modal {
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  display: none; /* Hidden by default */
+  position: fixed; /* Use fixed positioning */
+  top: 0; /* Position it to the top */
+  left: 0; /* Position it to the left */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  z-index: 1000; /* High z-index to overlay on top of other elements */
 }
 
+/* Modal Content Styles */
 .modal-content {
-  background-color: white;
-  margin: 15% auto;
-  padding: 20px;
-  width: 300px;
-  border-radius: 10px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  width: 250px; /* Keep the modal width */
+  max-width: 90%; /* Responsive max width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 0 auto; /* Center horizontally */
+  position: absolute; /* Absolute positioning within the modal */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Shift it back to center */
   text-align: center;
 }
 
-.modal-buttons {
-  margin-top: 20px;
+h2 {
+  margin-top: 0;
+  font-size: 1.2em;
+  color: #333;
 }
 
-.modal-save-btn,
+label {
+  font-size: 0.9em;
+  color: #666;
+  display: block;
+  margin-bottom: 8px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+  box-sizing: border-box;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.3s ease;
+}
+
+.modal-save-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.modal-save-btn:hover {
+  background-color: #218838;
+}
+
 .modal-cancel-btn {
-  margin: 5px;
+  background-color: #dc3545;
+  color: white;
+}
+
+.modal-cancel-btn:hover {
+  background-color: #c82333;
+}
+
+/* For responsiveness */
+@media (max-width: 600px) {
+  .modal-content {
+    width: 90%; /* Responsive width */
+  }
 }
 
 #take-picture-btn {
@@ -214,6 +275,36 @@ main {
 
 #take-picture-btn:hover {
   background-color: #2980b9;
+}
+
+.upload-container, .live-btn-container {
+  margin-right: 20px; /* Space between the buttons */
+}
+
+.upload-container:last-child, .live-btn-container:last-child {
+  margin-right: 0; /* Remove margin on the last element */
+}
+
+/* Button styles (unchanged) */
+.upload-btn, .live-btn, .save-picture-btn {
+  color: white;
+  border: none;
+  margin-top: 10px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+/* Green color for both buttons */
+.upload-btn, .live-btn, .save-picture-btn {
+  background-color: #28a745;
+}
+
+.upload-btn:hover, .live-btn:hover, .save-picture-btn:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
 }
 
 @media (max-width: 768px) {

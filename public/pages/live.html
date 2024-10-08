@@ -22,6 +22,18 @@
   </header>
 
   <main class="container">
+    <div id="imageNameModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2>Save Image</h2>
+        <label for="imageName">Enter Image Name:</label>
+        <input type="text" id="imageName" name="imageName" placeholder="Image name">
+        <div class="modal-buttons">
+          <button id="saveImageNameBtn" class="modal-save-btn">Save</button>
+          <button id="cancelImageNameBtn" class="modal-cancel-btn">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <div class="video-container" id="video-container">
       <div id="video-wrapper" class="video-wrapper">
         <video id="video" autoplay></video>
@@ -33,17 +45,6 @@
     </div>
 
     <!-- Modal for image name input -->
-    <div id="imageNameModal" class="modal" style="display: none;">
-      <div class="modal-content">
-        <h2>Save Image</h2>
-        <label for="imageName">Enter Image Name:</label>
-        <input type="text" id="imageName" name="imageName" placeholder="Image name...">
-        <div class="modal-buttons">
-          <button id="saveImageNameBtn" class="modal-save-btn">Save</button>
-          <button id="cancelImageNameBtn" class="modal-cancel-btn">Cancel</button>
-        </div>
-      </div>
-    </div>
 
     <button id="take-picture-btn">Take Picture</button>
   
