@@ -2,7 +2,6 @@ import { getFirestore, getDoc, updateDoc, arrayUnion, arrayRemove, doc } from "h
 import { getCurrentUser } from "../auth.js";
 import { deleteFirebaseImage } from "./firebase-db.js";
 import { deleteFirestoreImage } from "./firestore-db.js";
-import { mailer } from "../mailer.js";
 
 const db = getFirestore();
 const likeCountElement = document.getElementById('like-count');
@@ -104,7 +103,6 @@ function handleLikeClick(docId) {
 									likeButton.classList.add('liked');
 								}
 								// send mail
-								mailer("manuel.sharifi@gmail.com");
 						}
 				});
 			};
