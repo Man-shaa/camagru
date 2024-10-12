@@ -99,7 +99,8 @@ function handleLikeClick(docId) {
 									likeButton.classList.add('liked');
 
 									// send mail
-									sendEmail(currentUser.email); // Send the email here
+									const imageName = docSnap.data().fileName || "";
+									sendEmail(currentUser.email, imageName, "liked");
 								}
 						}
 				});
@@ -118,9 +119,11 @@ function handleLikeClick(docId) {
 	}
 }
 
-function sendEmail(userEmail) {
-	const subject = "New comment / like";
-	const message = "A user has commented or liked your image";
+function sendEmail(userEmail, imageName, action, commentText) {
+	const subject = `Image ${action} !`;
+	let message = `A user has ${action} your image \"${imageName}\".`;
+	if (arguments.length === 4)
+		message += `\n\nComment : ${commentText}`;
 
 	fetch(`/send_email/${userEmail}`, {
 		method: 'POST',
@@ -137,9 +140,6 @@ function sendEmail(userEmail) {
 			throw new Error('Network response was not ok');
 		}
 		return response.text();
-	})
-	.then(data => {
-		console.log('Email sent:', data);
 	})
 	.catch(error => {
 		console.error('Error sending email:', error);
@@ -208,11 +208,17 @@ function addComment(docId) {
 			commentText: commentText,
 			timestamp: new Date().toISOString()
 		})
-	}).then(() => {
+	}).then((docData) => {
 		// Clear the input field after submitting the comment
 		commentInput.value = '';
 		// Refresh comments to display the new one
 		displayComments(docId);
+
+		getDoc(imageDocRef)
+		.then((docSnap) => {
+			const imageName = docSnap.data().fileName || "";
+			sendEmail(currentUser.email, imageName, "commented", commentText);
+		});
 	}).catch(error => {
 		console.error('Error adding comment:', error);
 	});
