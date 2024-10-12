@@ -13,10 +13,12 @@ document.querySelector('.popup-image span').onclick = () => {
 
 document.addEventListener('DOMContentLoaded', function() {
 	const commentSection = document.getElementById('comments-section');
+	const likeButton = document.getElementById('like-button');
 	
 	initializeAuthListener((user) => {
 		if (!user) {
 			commentSection.style.display = 'none';
+			likeButton.style.display = 'none';
 		}
 	});
 });
@@ -57,7 +59,8 @@ document.querySelector('.images-container').addEventListener('click', (event) =>
 				document.getElementById('comment-button').onclick = () => {
 					addComment(docId);
 				};
-			} else {
+			}
+			else {
 				console.log("Document does not exist");
 			}
 		});
