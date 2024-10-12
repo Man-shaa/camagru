@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             username: user.displayName,
             email: user.email,
             uid: user.uid,
+            emailNotifications: true,
           };
 
           console.log("User data:", userData);

@@ -63,7 +63,7 @@ signupForm.addEventListener("click", (e) => {
 
   if (!validateForm())
     return;
-  
+
   const auth = getAuth();
 
   const username = document.getElementById('username').value;
@@ -77,23 +77,23 @@ signupForm.addEventListener("click", (e) => {
       console.log("before updateProfile", cred.user);
       
       updateProfile(cred.user, { displayName: username })
-        .then(() => {
-          console.log("after updateProfile");
-      const currentUser = auth.currentUser;
-      console.log("Current user:", auth.currentUser);
+      .then(() => {
+        console.log("after updateProfile");
+        const currentUser = auth.currentUser;
+        console.log("Current user:", auth.currentUser);
 
-      if (currentUser) {
-        sendEmailVerification(currentUser)
-        .then(() => {
-          console.log("Email verification sent!");
-          window.location.href = "/verify_email";
-        })
-        .catch((error) => {
-          console.error("Error sending email verification: ", error);
-        });
-      }
-      else
-        console.error("User is not properly authenticated.");
+        if (currentUser) {
+          sendEmailVerification(currentUser)
+          .then(() => {
+            console.log("Email verification sent!");
+            window.location.href = "/verify_email";
+          })
+          .catch((error) => {
+            console.error("Error sending email verification: ", error);
+          });
+        }
+        else
+          console.error("User is not properly authenticated.");
       })
       .catch((error) => {
         console.log("Error updating profile: ", error);

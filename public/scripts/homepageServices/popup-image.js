@@ -65,46 +65,59 @@ function handleLikeClick(docId) {
 
 	// Add event listener
 	likeButton.onclick = () => {
-			const currentUser = getCurrentUser();
-			if (!currentUser) {
-					console.log('User not logged in');
-					return;
+		const currentUser = getCurrentUser();
+		if (!currentUser) {
+				console.log('User not logged in');
+				return;
+		}
+
+		const imageDocRef = doc(db, 'images', docId);
+
+		// Fetch the latest data from Firestore
+		getDoc(imageDocRef).then((docSnap) => {
+			if (!docSnap.exists()) {
+				console.log("Document does not exist");
+				return;
 			}
-	
-			const imageDocRef = doc(db, 'images', docId);
 
-			// Fetch the latest data from Firestore
-			getDoc(imageDocRef).then((docSnap) => {
-					if (docSnap.exists()) {
-							const likedBy = docSnap.data().likedBy || [];
-							const currentLikes = docSnap.data().likes || 0;
-	
-							// not liked state
-							if (likedBy.includes(currentUser.uid)) {
-									likeCountElement.textContent = `${currentLikes - 1} Likes`;
-									updateLikes(docId, currentLikes - 1, arrayRemove(currentUser.uid));
-	
-									// Update button state
-									likeButton.classList.remove('liked');
-									likeButton.classList.add('unliked');
+			const likedBy = docSnap.data().likedBy || [];
+			const currentLikes = docSnap.data().likes || 0;
 
-								}
-								// liked state
-								else {
-									likeCountElement.textContent = `${currentLikes + 1} Likes`;
-									updateLikes(docId, currentLikes + 1, arrayUnion(currentUser.uid));
-									
-									// Update button state
-									likeButton.classList.remove('unliked');
-									likeButton.classList.add('liked');
+			// not liked state
+			if (likedBy.includes(currentUser.uid)) {
+					likeCountElement.textContent = `${currentLikes - 1} Likes`;
+					updateLikes(docId, currentLikes - 1, arrayRemove(currentUser.uid));
 
-									// send mail
-									const imageName = docSnap.data().fileName || "";
-									sendEmail(currentUser.email, imageName, "liked");
-								}
+					likeButton.classList.remove('liked');
+					likeButton.classList.add('unliked');
+
+				}
+				// liked state
+				else {
+					likeCountElement.textContent = `${currentLikes + 1} Likes`;
+					updateLikes(docId, currentLikes + 1, arrayUnion(currentUser.uid));
+					
+					likeButton.classList.remove('unliked');
+					likeButton.classList.add('liked');
+
+					const uploaderUserId = docSnap.data().userId;
+					const imageName = docSnap.data().fileName || "";
+					const uploaderRef = doc(db, 'users', uploaderUserId);
+					getDoc(uploaderRef).then((uploaderSnap) => {
+						if (uploaderSnap.exists()) {
+							const uploaderEmail = uploaderSnap.data().email;
+							const emailNotifications = uploaderSnap.data().emailNotifications;
+
+							// Send email to the uploader
+							sendEmail(emailNotifications, uploaderEmail, imageName, "liked");
 						}
-				});
-			};
+					})
+					.catch(error => {
+						console.error('Error fetching uploader data:', error);
+					});
+				}
+			});
+		};
 
 	function updateLikes(docId, newLikes, likeAction) {
 		const imageDocRef = doc(db, 'images', docId);
@@ -119,11 +132,14 @@ function handleLikeClick(docId) {
 	}
 }
 
-function sendEmail(userEmail, imageName, action, commentText) {
+function sendEmail(emailNotifications, userEmail, imageName, action, commentText) {
+	console.log("args : ", emailNotifications, userEmail, imageName, action, commentText);
+	if (emailNotifications === false)
+		return;
 	const subject = `Image ${action} !`;
 	let message = `A user has ${action} your image \"${imageName}\".`;
-	if (arguments.length === 4)
-		message += `\n\nComment : ${commentText}`;
+	if (arguments.length === 5)
+		message += `\n\nComment : \"${commentText}\"`;
 
 	fetch(`/send_email/${userEmail}`, {
 		method: 'POST',
@@ -216,8 +232,22 @@ function addComment(docId) {
 
 		getDoc(imageDocRef)
 		.then((docSnap) => {
+			const uploaderUserId = docSnap.data().userId;
 			const imageName = docSnap.data().fileName || "";
-			sendEmail(currentUser.email, imageName, "commented", commentText);
+			const uploaderRef = doc(db, 'users', uploaderUserId);
+			getDoc(uploaderRef)
+			.then((uploaderSnap) => {
+				if (uploaderSnap.exists()) {
+					const uploaderEmail = uploaderSnap.data().email;
+					const emailNotifications = uploaderSnap.data().emailNotifications;
+
+					// Send email to the uploader
+					sendEmail(emailNotifications, uploaderEmail, imageName, "commented", commentText);
+				}
+			})
+			.catch(error => {
+				console.error('Error fetching uploader data:', error);
+			});
 		});
 	}).catch(error => {
 		console.error('Error adding comment:', error);

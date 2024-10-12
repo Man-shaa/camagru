@@ -10,6 +10,7 @@ const storage = getStorage()
 
 const usernameField = document.getElementById("username");
 const emailField = document.getElementById("email");
+const emailNotificationsField = document.getElementById("notifications");
 
 function showMessage(message, divId, duration) {
   const messageDiv = document.getElementById(divId);
@@ -63,7 +64,7 @@ logoutButton.addEventListener('click', () => {
 // Enable field for editing
 function editField(fieldId) {
   const field = document.getElementById(fieldId);
-  field.disabled = false;
+  field.disabled = !field.disabled;
   field.focus();
 }
 
@@ -130,8 +131,11 @@ async function saveChanges() {
       updatedFields.username = usernameField.value;
     if (docData.email !== emailField.value)
       updatedFields.email = emailField.value;
+    if (docData.emailNotifications !== emailNotificationsField.checked)
+      updatedFields.emailNotifications = emailNotificationsField.checked;
 
-    if (updatedFields.username || updatedFields.email)
+    console.log('updatedFields:', updatedFields, 'length:', Object.keys(updatedFields).length);
+    if (Object.keys(updatedFields).length !== 0)
       await updateUserDataFirestore(userRef, updatedFields);
 
     if (updatedFields.email) {
@@ -150,7 +154,6 @@ async function saveChanges() {
         console.error("Error sending email verification: ", error);
       });
     }
-
   }
   catch (error) {
     console.error("Error saving changes:", error);
