@@ -1,5 +1,5 @@
 import { getFirestore, getDoc, updateDoc, arrayUnion, arrayRemove, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getCurrentUser } from "../auth.js";
+import { getCurrentUser, initializeAuthListener } from "../auth.js";
 import { deleteFirebaseImage } from "./firebase-db.js";
 import { deleteFirestoreImage } from "./firestore-db.js";
 
@@ -10,6 +10,16 @@ const likeCountElement = document.getElementById('like-count');
 document.querySelector('.popup-image span').onclick = () => {
 		document.querySelector('.popup-image').style.display = 'none';
 };
+
+document.addEventListener('DOMContentLoaded', function() {
+	const commentSection = document.getElementById('comments-section');
+	
+	initializeAuthListener((user) => {
+		if (!user) {
+			commentSection.style.display = 'none';
+		}
+	});
+});
 
 // Display popup image listener using event delegation
 document.querySelector('.images-container').addEventListener('click', (event) => {
