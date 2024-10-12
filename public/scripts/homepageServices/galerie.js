@@ -4,7 +4,7 @@ import { getFirestore, getDocs, collection, orderBy, query } from "https://www.g
 const db = getFirestore();
 
 const imagesPerPage = 5;
-export let totalImages = 0;
+let totalImages = 0;
 let currentPage = 1;
 const imagesCollectionRef = collection(db, 'images');
 
