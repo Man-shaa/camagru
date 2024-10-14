@@ -1,12 +1,13 @@
 import { getAuth, deleteUser, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { deleteObject, ref, getStorage } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
-import { collection, query, where, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
 import { getCurrentUser, initializeAuthListener } from "./auth.js";
 import { deleteUserFirestore, getUserFiles } from "./homepageServices/firestore-db.js";
 
 const auth = getAuth();
 const storage = getStorage()
+const db = getFirestore();
 
 const passwordField = document.getElementById("password");
 let currentUser = getCurrentUser();
