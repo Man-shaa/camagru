@@ -45,7 +45,7 @@ async function getUserFiles(userId) {
       if (data && data.uniqueImageName)
         uniqueImageNames.push(data.uniqueImageName);
     });
-		
+
     // Return an array of all uniqueImageNames
     return (uniqueImageNames);
   }
@@ -79,19 +79,6 @@ async function deleteCollection(db, collectionPath) {
   }
   catch (error) {
     console.error(`Error deleting collection at ${collectionPath}:`, error);
-    throw error;
-  }
-}
-
-// Get all subcollections of a document
-async function getSubcollections(docRef) {
-  try {
-    // Using listCollections to fetch all subcollections of the document
-    const subcollections = await listCollections(docRef);
-    return subcollections; // Return array of subcollection references
-  }
-  catch (error) {
-    console.error(`Error getting subcollections for document ${docRef.path}:`, error);
     throw error;
   }
 }

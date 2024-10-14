@@ -1,0 +1,186 @@
+/* Header Styling */
+header {
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  padding:0;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+  z-index: 10;
+}
+
+h1 {
+  text-align: center;
+  font-size: 24px;
+	font:bold;
+}
+
+.container {
+  position: relative;
+}
+
+main {
+	display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  overflow: auto;
+}
+
+body {
+	background-color: #f4f4f4;
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+	flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+footer {
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  z-index: 9;
+}
+
+.title-container {
+  font-size: 30px;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  line-height: 50px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.profile-container {
+  width: 60%;
+	height: fit-content;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn {
+	position: absolute;
+  margin-left: 20px;
+  display: inline-block;
+  padding: 10px 15px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  text-decoration: none;
+	z-index: 10;
+}
+
+.back-btn:hover {
+  background-color: #2980b9;
+}
+
+label {
+  font-size: 16px;
+  width: 100px;
+  font-weight: bold;
+}
+
+input[type="email"] {
+  padding: 8px;
+  width: 100%;
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.messageDiv {
+  background-color: hsl(327, 90%, 28%);
+  color: white;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: opacity 1s ease-in-out; /* Smooth transition for fade-out */
+  display: none; /* Start hidden */
+}
+
+/* Reset Button Styling */
+.delete-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: darkred;
+}
+
+/* Message Styling */
+.message {
+  margin-top: 15px;
+  color: #ff0000;
+  font-size: 14px;
+}
+
+
+@media (max-width: 450px) {
+  .profile-container {
+    width: 60%;
+    padding: 15px;
+  }
+
+  input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+  }
+
+	h1 {
+		font-size: 18px;
+	}
+
+	label {
+		font-size: 12px;
+	}
+	
+  .delete-btn {
+    width: 80%;
+		font-size: 14px;
+    margin-top: 10px;
+  }
+}

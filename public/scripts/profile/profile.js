@@ -1,12 +1,9 @@
-import { collection, query, where, getDocs, getFirestore, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, deleteUser, signOut} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, signOut} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { initializeAuthListener, getCurrentUser, updateCurrentUser } from "../auth.js";
-import { deleteObject, ref, getStorage } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
-import { deleteUserFirestore, getUserFiles } from "../homepageServices/firestore-db.js";
 
 const auth = getAuth();
 const db = getFirestore();
-const storage = getStorage()
 
 const usernameField = document.getElementById("username");
 const emailField = document.getElementById("email");
@@ -173,74 +170,6 @@ async function reauthenticateUser(user) {
   }
 }
 
-// Delete user account from Firebase Auth
-async function deleteUserAuth(user) {
-  try {
-    await deleteUser(user)
-    console.log("User account deleted successfully from Firebase Auth !");
-  }
-  catch (error) {
-    console.error("Error deleting user account:", error);
-    throw error;
-  }
-}
-
-// Function to delete image documents in Firestore based on uniqueFileName
-async function deleteUserImagesByUniqueFileNames(uniqueFileNames) {
-  try {
-    const imagesCollectionRef = collection(db, 'images');
-    
-    for (const uniqueFileName of uniqueFileNames) {
-      // Query the images collection for the document with the matching uniqueFileName
-      const q = query(imagesCollectionRef, where('uniqueImageName', '==', uniqueFileName));
-      const querySnapshot = await getDocs(q);
-
-      // Iterate through the results and delete the documents
-      querySnapshot.forEach(async (docSnap) => {
-        const docRef = doc(db, 'images', docSnap.id); // Document reference
-        await deleteDoc(docRef); // Delete the document in Firestore
-        console.log(`Deleted Firestore document for uniqueFileName: ${uniqueFileName}`);
-        
-        // Also delete the file from Firebase Storage
-        const fileRef = ref(storage, `images/${uniqueFileName}`);
-        await deleteObject(fileRef); // Delete the file in Firebase Storage
-        console.log(`Deleted file from Firebase Storage: ${uniqueFileName}`);
-      });
-    }
-  }
-  catch (error) {
-    console.error("Error deleting user images:", error);
-    throw error;
-  }
-}
-
-// Delete an account on Firebase Auth and Firestore
-async function deleteAccount(user) {
-  try {
-    await reauthenticateUser(user);
-
-    const uniqueFileNames = await getUserFiles(user.uid);
-
-    // Delete Firestore documents and Firebase Storage images for the user
-    await deleteUserImagesByUniqueFileNames(uniqueFileNames); // Deletes the files and documents
-
-    // Delete the user's Firestore document
-    await deleteUserFirestore(user);
-
-    // Delete the user's Firebase Auth account
-    await deleteUserAuth(user);
-
-    window.location.href = "/signin";
-  }
-  catch (error) {
-    if (error.code === "auth/wrong-password")
-      error = "Wrong password provided";
-    else if (error.code === "auth/too-many-requests")
-      error = "Too many attempts. You can immediately restore it by resetting your password or you can try again later.";
-    showMessage(error, "messageDiv", 7000);
-  }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   // Edit buttons click listener
   const editButtons = document.querySelectorAll(".edit-btn");
@@ -270,13 +199,9 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error('No user is logged in!');
       return;
     }
-
-    if (confirm("Are you sure you want to delete your account?")) {
-      try {
-        deleteAccount(user)
-      }
-      catch (error) {
-      }
-    }
+    
+    window.location.href = '/delete_account';
   });
 });
+
+export { reauthenticateUser };
