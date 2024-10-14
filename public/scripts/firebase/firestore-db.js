@@ -1,4 +1,4 @@
-import { deleteDoc, getFirestore, getDocs, query, where, collection, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { deleteDoc, getFirestore, getDocs, query, where, collection, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
 const db = getFirestore();
 
@@ -30,6 +30,17 @@ async function deleteFirestoreImage(imageRef, userId, uniqueFileName) {
   window.location.reload();
 }
 
+// Function to update user data in Firestore
+async function updateUserDataFirestore(userRef, updatedFields) {
+  try {
+    await updateDoc(userRef, updatedFields);
+    console.log('User data updated successfully in Firestore db!');
+  }
+  catch (error) {
+    console.error('Error updating user data in Firestore db:', error);
+    throw error;
+  }
+}
 
 // get all files's uniqueImageName uploaded from user [userId]
 async function getUserFiles(userId) {
@@ -104,4 +115,4 @@ async function deleteUserFirestore(user) {
   }
 }
 
-export { deleteFirestoreImage, getUserFiles, deleteUserFirestore };
+export { deleteFirestoreImage, getUserFiles, deleteUserFirestore, updateUserDataFirestore };
