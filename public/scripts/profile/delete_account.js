@@ -2,8 +2,8 @@ import { getAuth, deleteUser, EmailAuthProvider, reauthenticateWithCredential } 
 import { deleteObject, ref, getStorage } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 
-import { getCurrentUser, initializeAuthListener } from "./auth.js";
-import { deleteUserFirestore, getUserFiles } from "./homepageServices/firestore-db.js";
+import { getCurrentUser, initializeAuthListener } from "../auth/auth.js";
+import { deleteUserFirestore, getUserFiles } from "../firebase/firestore-db.js";
 
 const auth = getAuth();
 const storage = getStorage()
@@ -134,6 +134,8 @@ async function deleteAccount(user) {
   catch (error) {
     if (error.code === "auth/wrong-password")
       error = "Wrong password provided";
+    else if (error.code === "auth/missing-password")
+      error = "Password is required";
     else if (error.code === "auth/too-many-requests")
       error = "Too many attempts. You can immediately restore it by resetting your password or you can try again later.";
     showMessage(error, "messageDiv", 7000);

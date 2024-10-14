@@ -1,6 +1,6 @@
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, signOut} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { initializeAuthListener, getCurrentUser, updateCurrentUser } from "../auth.js";
+import { initializeAuthListener, getCurrentUser, updateCurrentUser } from "../auth/auth.js";
 
 const auth = getAuth();
 const db = getFirestore();

@@ -1,7 +1,7 @@
 import { getFirestore, getDoc, updateDoc, arrayUnion, arrayRemove, doc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getCurrentUser, initializeAuthListener } from "../auth.js";
-import { deleteFirebaseImage } from "./firebase-db.js";
-import { deleteFirestoreImage } from "./firestore-db.js";
+import { getCurrentUser, initializeAuthListener } from "../auth/auth.js";
+import { deleteFirebaseImage } from "../firebase/firebase-db.js";
+import { deleteFirestoreImage } from "../firebase/firestore-db.js";
 
 const db = getFirestore();
 const likeCountElement = document.getElementById('like-count');

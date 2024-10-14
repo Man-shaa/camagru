@@ -1,7 +1,6 @@
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 
-import { getCurrentUser } from "../auth.js";
 import { createImageElement } from "./galerie.js";
 
 // global variables

@@ -1,6 +1,6 @@
 import { sendPasswordResetEmail, getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
-import { initializeAuthListener, updateCurrentUser } from "./auth.js";
+import { initializeAuthListener, updateCurrentUser } from "../auth/auth.js";
 
 function showMessage(message, divId) {
   const messageDiv = document.getElementById(divId);

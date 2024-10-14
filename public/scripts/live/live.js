@@ -1,7 +1,7 @@
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getStorage, ref, listAll, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
-import { initializeAuthListener, getCurrentUser } from "./auth.js";
+import { initializeAuthListener, getCurrentUser } from "../auth/auth.js";
 
 const auth = getAuth();
 const storage = getStorage();
