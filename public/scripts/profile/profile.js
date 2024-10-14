@@ -1,6 +1,9 @@
-import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-import { getAuth, updateEmail, EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, signOut} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getAuth, sendEmailVerification, signOut} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 import { initializeAuthListener, getCurrentUser, updateCurrentUser } from "../auth/auth.js";
+
+import { updateUserDataFirestore } from "../firebase/firestore-db.js";
+import { updateUserEmailAuth } from "../firebase/firebase-auth.js";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -65,47 +68,6 @@ function editField(fieldId) {
   field.focus();
 }
 
-// Display a prompt for password
-async function promptForPassword() {
-  return new Promise((resolve, reject) => {
-    const password = prompt("Please enter your current password to proceed with updating your email:");
-
-    if (password) {
-      resolve(password);
-    }
-    else
-      reject("Password not provided");
-  });
-}
-
-// Function to update user email in Firebase Auth
-async function updateUserEmailAuth(user, newEmail) {
-  try {
-    await reauthenticateUser(user);
-    console.log("User reauthenticated successfully.");
-    await updateEmail(user, newEmail);
-    console.log('User email updated successfully in firebase Auth!');
-  }
-  catch (error) {
-    if (error.code === "auth/wrong-password")
-      error = "Wrong password provided";
-    showMessage(error, "messageDiv");
-    throw error;
-  }
-}
-
-// Function to update user data in Firestore
-async function updateUserDataFirestore(userRef, updatedFields) {
-  try {
-    await updateDoc(userRef, updatedFields);
-    console.log('User data updated successfully in Firestore db!');
-  }
-  catch (error) {
-    console.error('Error updating user data in Firestore db:', error);
-    throw error;
-  }
-}
-
 // Main function to save changes
 async function saveChanges() {
   const user = getCurrentUser();
@@ -157,19 +119,6 @@ async function saveChanges() {
   }
 }
 
-// reuthenticate user with prompt for password
-async function reauthenticateUser(user) {
-  try {
-    const password = await promptForPassword();
-    const credential = EmailAuthProvider.credential(user.email, password);
-    await reauthenticateWithCredential(user, credential);
-    console.log("User reauthenticated successfully.");
-  }
-  catch (error) {
-    throw error; // Re-throw to be handled in the caller function
-  }
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   // Edit buttons click listener
   const editButtons = document.querySelectorAll(".edit-btn");
@@ -199,9 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error('No user is logged in!');
       return;
     }
-    
     window.location.href = '/delete_account';
   });
 });
-
-export { reauthenticateUser };
