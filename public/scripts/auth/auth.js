@@ -30,6 +30,7 @@ const elements = {
   signinBtnContainer: document.getElementById('signin-btn-container'),
   logoutBtnContainer: document.getElementById('logout-btn-container'),
   uploadBtnContainer: document.getElementById('upload-container'),
+  profileBtnContainer: document.getElementById('profile-btn-container'),
   liveBtnContainer: document.getElementById('live-btn-container')
 };
 
@@ -41,6 +42,8 @@ function updateUI(user) {
 			elements.logoutBtnContainer.style.display = 'block';
     if (elements.uploadBtnContainer)
 			elements.uploadBtnContainer.style.display = 'flex';
+    if (elements.profileBtnContainer)
+			elements.profileBtnContainer.style.display = 'flex';
     if (elements.liveBtnContainer)
 			elements.liveBtnContainer.style.display = 'flex';
   }
@@ -51,6 +54,8 @@ function updateUI(user) {
 			elements.logoutBtnContainer.style.display = 'none';
     if (elements.uploadBtnContainer)
 			elements.uploadBtnContainer.style.display = 'none';
+    if (elements.profileBtnContainer)
+			elements.profileBtnContainer.style.display = 'none';
     if (elements.liveBtnContainer)
 			elements.liveBtnContainer.style.display = 'none';
   }
