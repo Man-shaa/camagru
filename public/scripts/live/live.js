@@ -111,7 +111,6 @@ document.getElementById('uploadButton').addEventListener('click', function() {
 
 function displayPicture(imageDataUrl) {
   const videoRect = videoWrapper.getBoundingClientRect();
-  console.log(videoRect);
 
   video.srcObject = null;
   video.style.backgroundImage = `url(${imageDataUrl})`;
