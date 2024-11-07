@@ -1,5 +1,5 @@
 import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+import { getFirestore, addDoc, collection, getDocs} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
 import { getStorage, ref, listAll, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-storage.js";
 import { initializeAuthListener, getCurrentUser } from "../auth/auth.js";
 
@@ -16,6 +16,7 @@ const savePictureButton = document.getElementById('save-picture-btn');
 const videoWrapper = document.getElementById('video-wrapper');
 const cancelImageNameBtn = document.getElementById('cancelImageNameBtn');
 const saveImageNameBtn = document.getElementById('saveImageNameBtn');
+
 let isPictureTaken = false;
 let stickers = [];
 let currentUser = null;
@@ -27,6 +28,36 @@ initializeAuthListener((user) => {
     window.location.href = '/signin';
   }
   currentUser = getCurrentUser();
+});
+
+const thumbnailsBtn = document.getElementById('thumbnails-btn');
+const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+const thumbnailsModal = document.getElementById('thumbnailsModal');
+const closeThumbnailsBtn = document.getElementById('closeThumbnailsBtn');
+
+thumbnailsBtn.addEventListener('click', async () => {
+  thumbnailsModal.innerHTML = ''; // Clear previous thumbnails
+
+  try {
+    const userUploadsRef = collection(db, `users/${currentUser.uid}/uploads`);
+    const querySnapshot = await getDocs(userUploadsRef);
+
+    querySnapshot.forEach((doc) => {
+      const imageUrl = doc.data().imageUrl;
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.classList.add('thumbnail');
+      thumbnailsModal.appendChild(img);
+    });
+
+    thumbnailsContainer.style.display = 'block';
+  } catch (error) {
+    console.error('Error fetching thumbnails:', error);
+  }
+});
+
+closeThumbnailsBtn.addEventListener('click', () => {
+  thumbnailsContainer.style.display = 'none';
 });
 
 // Logout button listener
