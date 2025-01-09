@@ -40,22 +40,3 @@ export function uploadImage(currentUserId, file) {
 		console.log("Error uploading file: ", error);
 	});
 };
-
-// // Upload and add a new image to Firestore when clicking on upload button
-// document.getElementById('fileInput').addEventListener('change', function(event) {
-// 	const currentUser = getCurrentUser();
-
-// 	if (!currentUser) {
-// 		console.log("user must be logged to upload an image");
-// 		return;
-// 	}
-// 	const file = event.target.files[0];
-// 	if (file) {
-// 		uploadImage(currentUser.uid, file);
-// 	}
-// });
-
-// // Trigger file input when the upload button is clicked
-// document.getElementById('uploadButton').addEventListener('click', function() {
-// 	document.getElementById('fileInput').click();
-// });

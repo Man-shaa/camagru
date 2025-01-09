@@ -14,7 +14,7 @@ document.querySelector('.popup-image span').onclick = () => {
 document.addEventListener('DOMContentLoaded', function() {
 	const commentSection = document.getElementById('comments-section');
 	const likeButton = document.getElementById('like-button');
-	
+
 	initializeAuthListener((user) => {
 		if (!user) {
 			commentSection.style.display = 'none';

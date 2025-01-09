@@ -108,45 +108,59 @@
   background-color: darkred;
 }
 
+
 #comments-section {
-  margin-top: 20px;
-  text-align: center;
-  color: #fff;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%); /* Centers the div horizontally */
+  width: 80%; /* Set a smaller width, adjust as needed */
+  max-width: 600px; /* Optional: limit the max width */
+  background: #f9f9f9;
+  border-top: 1px solid #ddd;
+  padding: 15px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 999; /* Ensure it's above other content */
 }
-
-#comment-input {
-  width: 80%;
-  padding: 10px;
-  border: 1px solid #fff;
-  border-radius: 5px;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  margin-bottom: 10px;
-}
-
-#comment-button {
-  background-color: #2ed573; /* Green */
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-#comment-button:hover {
-  background-color: #1c6c3b; /* Darker Green */
-}
-
-/* Comments List */
-#comments-list {
-  margin-top: 10px;
-}
-
-.comment {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 10px;
-  border-radius: 5px;
-  margin: 5px 0;
-}
+  
+  /* Comment History */
+  #comments-list {
+	max-height: 150px; /* Limit the height for scrollable content */
+	overflow-y: auto; /* Add scrollbar if necessary */
+	margin-bottom: 10px;
+	font-size: 14px;
+	line-height: 1.5;
+  }
+  
+  /* Individual Comments */
+  .comment {
+	margin-bottom: 5px;
+	color: #333;
+  }
+  
+  /* Comment Input */
+  #comment-input {
+	width: calc(100% - 100px); /* Allow space for submit button */
+	padding: 8px;
+	font-size: 14px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	box-sizing: border-box;
+  }
+  
+  /* Submit Button */
+  #comment-button {
+	width: 60px;
+	margin-left: 10px;
+	padding: 8px;
+	font-size: 14px;
+	background: #007bff;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+  }
+  
+  #comment-button:hover {
+	background: #0056b3;
+  }
