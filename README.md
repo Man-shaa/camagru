@@ -76,5 +76,3 @@ The primary objective of Camagru is to develop a complete web application from s
 - Server-side restrictions for image ownership and actions
 - No client-stored or hardcoded credentials
 - All credentials and sensitive data should be placed in a `.env` file
-
----
