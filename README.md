@@ -22,11 +22,7 @@ The primary objective of Camagru is to develop a complete web application from s
 - Structured layout (header, main, footer)
 - Responsive design for mobile compatibility
 - Form validation and secure input handling
-- Secure architecture to avoid:
-  - XSS
-  - SQL injection
-  - Plaintext password storage
-  - Unauthorized content manipulation
+- Secured architecture
 
 #### 2. User Management
 - Sign up with email, username, and secure password
@@ -34,45 +30,31 @@ The primary objective of Camagru is to develop a complete web application from s
 - Secure login and logout
 - Password reset via email
 - Profile management: update email, username, and password
-- .env configuration for credentials (ignored in Git)
+- .env configuration for credentials
 
 #### 3. Gallery
 - Public gallery of all user-edited images
-- Pagination (min 5 images per page)
+- Pagination
 - Authenticated users can:
   - Like images
   - Comment on images
-- Email notifications on new comments (enabled by default, can be disabled)
+  - delete their own images
+- Email notifications on new comments
 
 #### 4. Editing
 - Authenticated access only
 - Live webcam preview or image upload
-- Select overlay image (with alpha channel)
-- Server-side image composition
+- Select overlay image
 - Thumbnail preview of user’s previous captures
-- User can delete **only** their own images
-
----
-
-## 🧪 Bonus Ideas (Optional)
-
-> Bonuses will only be evaluated if the mandatory part is 100% complete and functional.
-
-- AJAX-powered interactions (e.g. image likes, comments, deletion)
-- Live preview of overlays directly on webcam stream
-- Infinite scroll/pagination for gallery
-- Social media sharing
-- Animated GIF rendering
 
 ---
 
 ## 🛠️ Technologies & Tools
 
 ### Languages
-- **Frontend:** HTML5, CSS3, JavaScript (Vanilla, no JS frameworks)
-- **Backend:** PHP (Standard Library only)
-- **Database:** MySQL (or MariaDB)
-- **Image Processing:** GD or Imagick (PHP libraries)
+- **Frontend:** HTML5, CSS3, JavaScript
+- **Backend:** PHP, Firebase
+- **Database:** Firebase DB
 
 ### Tools
 - Docker / Docker Compose
@@ -89,24 +71,10 @@ The primary objective of Camagru is to develop a complete web application from s
 
 ## 🧷 Security Considerations
 
-- Passwords must be hashed (e.g. with `password_hash`)
-- CSRF protection for form submissions
+- Passwords must be hashed
 - Proper input sanitization and validation
 - Server-side restrictions for image ownership and actions
 - No client-stored or hardcoded credentials
-- All credentials and sensitive data should be placed in a `.env` file (excluded from Git)
+- All credentials and sensitive data should be placed in a `.env` file
 
 ---
-
-## 🧪 Deployment
-
-The project must support deployment using containers. A `docker-compose.yml` file is required for setting up:
-
-- Web server (Apache/Nginx)
-- PHP backend
-- Database service
-
-With a single command, the full environment should be launchable.
-
-```bash
-docker-compose up --build
