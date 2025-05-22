@@ -58,14 +58,8 @@ The primary objective of Camagru is to develop a complete web application from s
 
 ### Tools
 - Docker / Docker Compose
-- Apache or Nginx (or PHP built-in webserver)
 - Mail server or external SMTP for notifications
 - Git
-
-### Framework Restrictions
-- ✅ CSS frameworks allowed (as long as they don’t include forbidden JS)
-- ❌ JS frameworks (React, Vue, jQuery, etc.) not allowed
-- ❌ External server-side libraries without a native PHP equivalent
 
 ---
 
